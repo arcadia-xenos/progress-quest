@@ -26,6 +26,7 @@ Entity::Entity(QObject *parent) :
     Inventory.clear();
     Quantity.clear();
     Spells.clear();
+    Armor.clear();
 }
 
 int Entity::Encumbrance()

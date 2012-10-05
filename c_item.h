@@ -1,6 +1,7 @@
 #ifndef C_ITEM_H
 #define C_ITEM_H
 
+#include <cmath>
 #include <QString>
 #include "pq7_config.h"
 
@@ -16,7 +17,7 @@ public:
     void setName(QString setname);
 
     int Bonus();
-    void setBonus(int setbonus);
+    void setBonus(int bonus);
 
     int Appraisal();
 
@@ -39,6 +40,8 @@ public:
     void addOfMod();
     void addAdjMod();
 
+    void makeClosestGrade(t_pq_equip iType, int grade);
+
     void clear();
 
 private:
@@ -49,7 +52,7 @@ private:
     QList<bool> modprefix;
     QList<int>  modgrades;
 
-    int bonus;
+    int itemBonus;
 };
 
 #endif // C_ITEM_H

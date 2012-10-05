@@ -13,9 +13,9 @@ typedef enum {
     pq_state_heading_to_killing_fields,
     pq_state_fight,
     pq_state_heading_to_town,
-    pq_state_selling_off
+    pq_state_selling_off,
+    pq_state_buying_new_equip
 } t_pq_state;
-
 
 namespace Ui {
 class MainWindow;
@@ -47,17 +47,24 @@ private:
     void addQuest(QString name);
     QString randQuest();
 
-    void tranState();
     void setMonster();
     void addMonDrop();
     QString sellInvItem();
     void rmInvItem();
-    void updInvTbl();
+    void buyNewEq();
+
+    c_Item* makeEqByGrade(t_pq_equip eqtype , int grade);
+    c_Item* upgradeEq(t_pq_equip eqtype , int grade);
 
     void winStats();
     void winSpells();
 
     void updSpellTbl();
+    void updInvTbl();
+    void updEquipTbl();
+    void updStatsTbl();
+
+    void tranState();
 
     // timer drive
     QTimer *pb_action_timer;

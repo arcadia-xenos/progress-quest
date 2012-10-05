@@ -55,19 +55,25 @@ void MainWindow::incr_pb_action_value()
     {
         ui->pb_action->setValue(value % ui->pb_action->maximum());
 
-
-        if (State == pq_state_fight) {
+        switch(State) {
+        case pq_state_reserved_1: break;;
+        case pq_state_heading_to_killing_fields: break;;
+        case pq_state_fight:
             MainWindow::incr_pb_experience_value();
 
             MainWindow::incr_pb_quest_value();
 
             MainWindow::incr_pb_encumbrance_value();
             MainWindow::addMonDrop();
-        }
-
-        if (State == pq_state_selling_off){
+            break;;
+        case pq_state_heading_to_town: break;;
+        case pq_state_selling_off:
             MainWindow::rmInvItem();
             MainWindow::incr_pb_encumbrance_value();
+            break;;
+        case pq_state_buying_new_equip:
+            MainWindow::buyNewEq();
+            break;;
         }
 
         MainWindow::tranState();
@@ -204,36 +210,13 @@ void MainWindow::initFrames()
 
 
     // stats
-    for (int i = 0; i < gConfig->PrimeStats.size(); i++) {
-        ui->tbl_stats->setItem(i, 0, new QTableWidgetItem(gConfig->PrimeStats.at(i)));
-    }
-    ui->tbl_stats->setItem(ui->tbl_stats->rowCount() - 2, 0, new QTableWidgetItem("HP Max"));
-    ui->tbl_stats->setItem(ui->tbl_stats->rowCount() - 1, 0, new QTableWidgetItem("MP Max"));
-
-    //      Load stats from player
-    ui->tbl_stats->setItem(0, 1, new QTableWidgetItem(Player->STR));
-    ui->tbl_stats->setItem(1, 1, new QTableWidgetItem(Player->INT));
-    ui->tbl_stats->setItem(2, 1, new QTableWidgetItem(Player->WIS));
-    ui->tbl_stats->setItem(3, 1, new QTableWidgetItem(Player->DEX));
-    ui->tbl_stats->setItem(4, 1, new QTableWidgetItem(Player->CON));
-    ui->tbl_stats->setItem(5, 1, new QTableWidgetItem(Player->CHA));
-    ui->tbl_stats->setItem(6, 1, new QTableWidgetItem(Player->HPMax));
-    ui->tbl_stats->setItem(7, 1, new QTableWidgetItem(Player->MPMax));
-
+    MainWindow::updStatsTbl();
 
     // spells
     MainWindow::updSpellTbl();
 
     // equipment
-    ui->tbl_equipment->setRowCount(gConfig->Equips.size());
-    for (int i = 0; i < gConfig->Equips.size(); i++) {
-        ui->tbl_equipment->setItem( i, 0, new QTableWidgetItem(gConfig->Equips.at(i)) );
-    }
-    ui->tbl_equipment->setItem(0, 1, new QTableWidgetItem(Player->Weapon->Name()) );
-    ui->tbl_equipment->setItem(1, 1, new QTableWidgetItem(Player->Sheild->Name()) );
-    for (int i(0); i < Player->Armor.size(); i++) {
-         ui->tbl_equipment->setItem(i + 2, 1, new QTableWidgetItem(Player->Armor.at(i)->Name()) );
-    }
+    MainWindow::updEquipTbl();
 
     // list inventory
     MainWindow::updInvTbl();
@@ -258,9 +241,9 @@ void MainWindow::initFrames()
 void MainWindow::initPlayer()
 {
     c_Spell *spell = new c_Spell;
-    c_Item *weapon = new c_Item;
-    c_Item *sheild = new c_Item;
-    QList<c_Item*> armor;
+    //c_Item *weapon = new c_Item;
+    //c_Item *sheild = new c_Item;
+    //QList<c_Item*> armor;
     int index(0);
 
     // rand traits
@@ -273,40 +256,20 @@ void MainWindow::initPlayer()
     Player->Spells.append(spell);
 
     // add starting weapon (a weak one =D )
-    do {
-        weapon->clear();
-        weapon->makeWeapon();
-
-        if (rand() % 2 > 0) {
-            weapon->addWeaponNegMod();
-        }
-
-        weapon->setBonus(-1 * (rand() % 4 + 1) );
-    } while (weapon->Grade() > -4);
-    Player->Weapon = weapon;
+    Player->Weapon = MainWindow::makeEqByGrade(pq_equip_weapon, -4);
 
     // Look ma, no sheild!
-    Player->Sheild = sheild;
+    Player->Sheild = new c_Item;
 
     // add two starting armors (weak, random)
-    do {
-        armor << new c_Item;
-    } while (armor.size() < 9);
-
-    for (int i(0); i < 2; i++) {
-        index = rand() % armor.size();
-        do {
-            armor.at(index)->clear();
-            armor.at(index)->makeArmor();
-
-            if (rand() % 2 > 0) {
-                armor.at(index)->addDefNegMod();
-            }
-
-            armor.at(index)->setBonus(-1 * (rand() % 2 + 1));
-        } while (armor.at(index)->Grade() > -2);
+    for(int i(0); i < 9; i++) {
+        Player->Armor.append(new c_Item);
     }
-    Player->Armor = armor;
+    for (int i(0); i < 2; i++) {
+        index = rand() % Player->Armor.size();
+        delete Player->Armor[index];
+        Player->Armor[index] = MainWindow::makeEqByGrade(pq_equip_armor, -2);
+    }
 
     // finally, money to drink at the bar with
     Player->Gold = 10;
@@ -445,6 +408,11 @@ void MainWindow::setAction()
         Action = tr("Selling ") + MainWindow::sellInvItem();
         pb_action_timer->setInterval(20);
         break;;
+    case pq_state_buying_new_equip:
+        // shopping!!
+        Action = tr("Negotiating purchase of new equipment");
+        pb_action_timer->setInterval(35);
+        break;;
     default:
         Action = tr("You are lost in another plane of existance");
         pb_action_timer->setInterval(1000);
@@ -470,6 +438,11 @@ void MainWindow::tranState()
         break;;
     case pq_state_selling_off:
         if (Player->Inventory.empty())
+            State = pq_state_buying_new_equip;
+        break;;
+    case pq_state_buying_new_equip:
+        if (Player->Gold < Player->Level.toInt() *
+                (80 + gConfig->fnPercent(Player->Level.toInt(), 80)) )
             State = pq_state_heading_to_killing_fields;
         break;;
     default:
@@ -632,6 +605,8 @@ void MainWindow::winStats()
 
     Player->HPMax = Player->HPMax.number(Player->HPMax.toInt() + (rand() % 12 + 1));
     Player->MPMax = Player->MPMax.number(Player->MPMax.toInt() + (rand() % 8 + 1));
+
+    MainWindow::updStatsTbl();
 }
 
 void MainWindow::winSpells()
@@ -664,6 +639,190 @@ void MainWindow::winSpells()
         Player->Spells.append(spell);
 
     MainWindow::updSpellTbl();
+}
+
+
+void MainWindow::buyNewEq()
+{
+    c_Item* equip;
+    t_pq_equip select;
+    bool found(false);
+    int pick(0);
+
+    // first find new things to buy
+    if (Player->Weapon->Name() == tr("") ) {
+        delete Player->Weapon;
+        Player->Weapon = MainWindow::makeEqByGrade(pq_equip_weapon, Player->Level.toInt());
+        Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
+        found = true;
+    }
+    else
+        if (Player->Sheild->Name() == tr("")) {
+            delete Player->Sheild;
+            Player->Sheild = MainWindow::makeEqByGrade(pq_equip_shield, Player->Level.toInt());
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
+            found = true;
+        }
+        else
+            for(int i(0); ( (! found) && (i < Player->Armor.size()) ); i++) {
+                if (Player->Armor.at(i)->Name() == tr("")){
+                    delete Player->Armor[i];
+                    Player->Armor[i] = MainWindow::makeEqByGrade(pq_equip_armor, Player->Level.toInt());
+                    Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 2) * 10) ); // cost = 20%-40%
+                    found=true;
+                }
+            }
+
+    if (! found) {
+        // if all filled, then upgrade
+        select = (t_pq_equip)(rand() % 3); // random equip
+        switch(select) {
+        case pq_equip_weapon:
+            equip = MainWindow::upgradeEq(select, Player->Weapon->Grade());
+            delete Player->Weapon;
+            Player->Weapon = equip;
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
+            break;;
+        case pq_equip_shield:
+            equip = MainWindow::upgradeEq(select, Player->Sheild->Grade());
+            delete Player->Sheild;
+            Player->Sheild = equip;
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
+            break;;
+        case pq_equip_armor:
+            pick = rand() % Player->Armor.size();
+            equip = MainWindow::upgradeEq(select, Player->Armor.at(pick)->Grade());
+            delete Player->Armor[pick];
+            Player->Armor[pick] = equip;
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
+            break;;
+        }
+    }
+
+    MainWindow::updEquipTbl();
+}
+
+c_Item* MainWindow::makeEqByGrade(t_pq_equip eqtype, int grade)
+{
+    c_Item* equip = new c_Item;
+
+    switch(eqtype) {
+
+    case pq_equip_weapon:
+
+        equip->makeClosestGrade(eqtype, grade);
+
+        // 2 possible mods, 50% chnc each: player level affects pos/neg
+        for(int i(0); i < 2; i++) {
+            if (rand() % 2 == 0) {
+                if (rand() % Player->Level.toInt() < 5) equip->addWeaponNegMod();
+                else equip->addWeaponMod();
+            }
+        }
+
+        // set bonus to make up differance in grade
+        equip->setBonus(grade - equip->Grade());
+
+        break;;
+
+    case pq_equip_shield:
+
+        equip->makeClosestGrade(eqtype, grade);
+
+        // 2 possible mods, 50% chnc each: player level affects pos/neg
+        for(int i(0); i < 2; i++) {
+            if (rand() % 2 == 0) {
+                if (rand() % Player->Level.toInt() < 5) equip->addDefNegMod();
+                else equip->addDefMod();
+            }
+        }
+
+        // set bonus to make up differance in grade
+        equip->setBonus(grade - equip->Grade());
+
+        break;;
+
+    case pq_equip_armor:
+
+        equip->makeClosestGrade(eqtype, grade);
+
+        // 2 possible mods, 50% chnc each: player level affects pos/neg
+        for(int i(0); i < 2; i++) {
+            if (rand() % 2 == 0) {
+                if (rand() % Player->Level.toInt() < 5) equip->addDefNegMod();
+                else equip->addDefMod();
+            }
+        }
+
+        // set bonus to make up differance in grade
+        equip->setBonus(grade - equip->Grade());
+
+        break;;
+    }
+
+    return equip;
+}
+
+c_Item* MainWindow::upgradeEq(t_pq_equip eqtype, int grade)
+{
+    c_Item* equip = new c_Item;
+
+    switch (eqtype) {
+    case pq_equip_weapon:
+        equip = MainWindow::makeEqByGrade(eqtype, grade + 1);
+        break;;
+    case pq_equip_shield:
+        equip = MainWindow::makeEqByGrade(eqtype, grade + 1);
+        break;;
+    case pq_equip_armor:
+        equip = MainWindow::makeEqByGrade(eqtype, grade + 1);
+        break;;
+    }
+
+    return equip;
+}
+
+void MainWindow::updEquipTbl()
+{
+    // wipe
+    ui->tbl_equipment->clearContents();
+    ui->tbl_equipment->setRowCount(2 + Player->Armor.size());
+
+    // reload equipment from player and config
+    ui->tbl_equipment->setRowCount(gConfig->Equips.size());
+    for (int i = 0; i < gConfig->Equips.size(); i++) {
+        ui->tbl_equipment->setItem( i, 0, new QTableWidgetItem(gConfig->Equips.at(i)) );
+    }
+    ui->tbl_equipment->setItem(0, 1, new QTableWidgetItem(Player->Weapon->Name()) );
+    ui->tbl_equipment->setItem(1, 1, new QTableWidgetItem(Player->Sheild->Name()) );
+    for (int i(0); i < Player->Armor.size(); i++) {
+         ui->tbl_equipment->setItem(i + 2, 1, new QTableWidgetItem(Player->Armor.at(i)->Name()) );
+    }
+}
+
+void MainWindow::updStatsTbl()
+{
+    // wipe
+    ui->tbl_stats->clearContents();
+    ui->tbl_stats->setRowCount(2 + gConfig->PrimeStats.size());
+
+    // stats
+    for (int i = 0; i < gConfig->PrimeStats.size(); i++) {
+        ui->tbl_stats->setItem(i, 0, new QTableWidgetItem(gConfig->PrimeStats.at(i)));
+    }
+    ui->tbl_stats->setItem(ui->tbl_stats->rowCount() - 2, 0, new QTableWidgetItem("HP Max"));
+    ui->tbl_stats->setItem(ui->tbl_stats->rowCount() - 1, 0, new QTableWidgetItem("MP Max"));
+
+    //      Load stats from player
+    ui->tbl_stats->setItem(0, 1, new QTableWidgetItem(Player->STR));
+    ui->tbl_stats->setItem(1, 1, new QTableWidgetItem(Player->INT));
+    ui->tbl_stats->setItem(2, 1, new QTableWidgetItem(Player->WIS));
+    ui->tbl_stats->setItem(3, 1, new QTableWidgetItem(Player->DEX));
+    ui->tbl_stats->setItem(4, 1, new QTableWidgetItem(Player->CON));
+    ui->tbl_stats->setItem(5, 1, new QTableWidgetItem(Player->CHA));
+    ui->tbl_stats->setItem(6, 1, new QTableWidgetItem(Player->HPMax));
+    ui->tbl_stats->setItem(7, 1, new QTableWidgetItem(Player->MPMax));
+
 }
 
 void MainWindow::updSpellTbl()

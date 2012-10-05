@@ -5,15 +5,26 @@ c_Item::c_Item()
     c_Item::clear();
 }
 
+void c_Item::clear()
+{
+    basename.clear();
+    basegrade = 0;
+    modifiers.clear();
+    modgrades.clear();
+    modprefix.clear();
+    itemBonus = 0;
+    Weight =0;
+}
+
 QString c_Item::Name()
 {
     QString rtn;
     rtn.clear();
 
     // start with bonus
-    if (bonus != 0) {
-        if (bonus > 0) rtn += "+";
-        rtn += QString().number(bonus);
+    if (itemBonus != 0) {
+        if (itemBonus > 0) rtn += "+";
+        rtn += QString().number(itemBonus);
         rtn += " ";
     }
 
@@ -47,12 +58,12 @@ void c_Item::setName(QString setname)
 
 int c_Item::Bonus()
 {
-    return bonus;
+    return itemBonus;
 }
 
-void c_Item::setBonus(int setbonus)
+void c_Item::setBonus(int bonus)
 {
-    bonus = setbonus;
+    itemBonus = bonus;
 }
 
 int c_Item::Appraisal()
@@ -79,7 +90,7 @@ int c_Item::Grade()
     }
 
     // add bonus
-    g += bonus;
+    g += itemBonus;
 
     return g;
 }
@@ -184,13 +195,67 @@ void c_Item::addAdjMod()
     modprefix << true;
 }
 
-void c_Item::clear()
+void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
 {
-    basename.clear();
-    basegrade = 0;
-    modifiers.clear();
-    modgrades.clear();
-    modprefix.clear();
-    bonus = 0;
-    Weight =0;
+    QStringList* itemList;
+
+    switch(iType) {
+    case pq_equip_weapon:
+        itemList = &gConfig->Weapons;
+        break;;
+    case pq_equip_shield:
+        itemList = &gConfig->Shields;
+        break;;
+    case pq_equip_armor:
+        itemList = &gConfig->Armors;
+        break;;
+    }
+
+    bool found(false);
+    int index(0), curGrade(0), lastDiff(0), closestGrade(0);
+    QStringList cdata, listFound;
+
+    // traverse all weapons - list exacts / find closest
+    do {
+        // extract grade from current item
+        cdata = itemList->at(index).split("|");
+        curGrade = cdata.at(1).toInt();
+
+        // check equals - toggle found / add name
+        if (curGrade == grade) {
+            found = true;
+            listFound.append(cdata.at(0)); // add name
+        }
+        else
+        {
+            // prime lastDiff (make larger than 0)
+            if (lastDiff == 0) lastDiff = abs(grade - curGrade);
+
+            // find closest grade
+            if (abs(grade - curGrade) <= lastDiff) {
+                lastDiff = abs(grade - curGrade);
+                closestGrade = curGrade;
+            }
+        }
+        index++;
+
+    } while (index < itemList->size());
+
+    // no exact grades found
+    if (! found)
+    {
+        // use closest grade - find all -> listFound
+        for (index=0; index < itemList->size(); index++) {
+            cdata = itemList->at(index).split("|");
+            if (cdata.at(1).toInt() == closestGrade)
+                listFound.append(cdata.at(0));
+        }
+    }
+
+    // randomize from names list (closest or exact)
+    basename = listFound.at(rand() % listFound.size());
+    if (found) basegrade = grade;
+    else basegrade = closestGrade;
+    Weight = 1;
 }
+
