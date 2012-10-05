@@ -650,57 +650,64 @@ void MainWindow::buyNewEq()
 {
     c_Item* equip;
     t_pq_equip select;
-    bool found(false);
     int pick(0);
 
-    // first find new things to buy
-    if (Player->Weapon->Name() == tr("") ) {
-        delete Player->Weapon;
-        Player->Weapon = MainWindow::makeEqByGrade(pq_equip_weapon, Player->Level.toInt());
-        Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
-        found = true;
-    }
-    else
-        if (Player->Sheild->Name() == tr("")) {
-            delete Player->Sheild;
-            Player->Sheild = MainWindow::makeEqByGrade(pq_equip_shield, Player->Level.toInt());
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
-            found = true;
+    // randomly pick equipment slot
+    select = (t_pq_equip)(rand() % 3); // random equip
+
+    switch(select) {
+
+    case pq_equip_weapon:
+
+        // if not filled - buy first one
+        if (Player->Weapon->Name() == tr("") ) {
+            delete Player->Weapon;
+            Player->Weapon = MainWindow::makeEqByGrade(select, -4);
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
         }
         else
-            for(int i(0); ( (! found) && (i < Player->Armor.size()) ); i++) {
-                if (Player->Armor.at(i)->Name() == tr("")){
-                    delete Player->Armor[i];
-                    Player->Armor[i] = MainWindow::makeEqByGrade(pq_equip_armor, Player->Level.toInt());
-                    Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 2) * 10) ); // cost = 20%-40%
-                    found=true;
-                }
-            }
-
-    if (! found) {
-        // if all filled, then upgrade
-        select = (t_pq_equip)(rand() % 3); // random equip
-        switch(select) {
-        case pq_equip_weapon:
+        {
+            // upgrade
             equip = MainWindow::upgradeEq(select, Player->Weapon->Grade());
             delete Player->Weapon;
             Player->Weapon = equip;
             Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
-            break;;
-        case pq_equip_shield:
+        }
+        break;;
+
+    case pq_equip_shield:
+
+        if (Player->Sheild->Name() == tr("")) {
+            delete Player->Sheild;
+            Player->Sheild = MainWindow::makeEqByGrade(pq_equip_shield, Player->Level.toInt());
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
+        }
+        else
+        {
             equip = MainWindow::upgradeEq(select, Player->Sheild->Grade());
             delete Player->Sheild;
             Player->Sheild = equip;
             Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
-            break;;
-        case pq_equip_armor:
-            pick = rand() % Player->Armor.size();
+        }
+        break;;
+    case pq_equip_armor:
+
+        // pick random armor
+        pick = rand() % Player->Armor.size();
+
+        if (Player->Armor.at(pick)->Name() == tr("")){
+            delete Player->Armor[pick];
+            Player->Armor[pick] = MainWindow::makeEqByGrade(pq_equip_armor, Player->Level.toInt());
+            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 2) * 10) ); // cost = 20%-40%
+        }
+        else
+        {
             equip = MainWindow::upgradeEq(select, Player->Armor.at(pick)->Grade());
             delete Player->Armor[pick];
             Player->Armor[pick] = equip;
             Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
-            break;;
         }
+        break;;
     }
 
     MainWindow::updEquipTbl();
