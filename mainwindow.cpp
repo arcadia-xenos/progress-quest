@@ -169,7 +169,7 @@ void MainWindow::incr_pb_experience_value()
             ui->pb_experience->setValue(value);
 
             //      incr level
-            Player->Level = Player->Level.number(Player->Level.toInt() + 1);
+            Player->incrLevel();
             ui->tbl_traits->setCurrentCell(3,1);
             ui->tbl_traits->currentItem()->setText(Player->Level);
 

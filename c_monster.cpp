@@ -329,6 +329,9 @@ bool c_Monster::makeMountedRange(int lowest_level, int highest_level)
 
 bool c_Monster::makeGroup(int level)
 {
+    // for my sanity - takes away nasty low level cases
+    if (level < 8) return false;
+
     // trys to create a gang of monsters with combined level
     c_Monster minion;
     c_Monster leader;
@@ -339,29 +342,18 @@ bool c_Monster::makeGroup(int level)
 
     // calculate levels for leader and minions
 
-    // levels -1, 0 and 1
-    if ( (level <= 1) && (level >= -1) ) {
-        lvLeader = 1 * level;
-        lvMinion = lvLeader % level;
-        numOfMinions = 1;
-    }
-    // levels -2 and 2
-    else if ( (level == 2) || (level == -2 ) ) {
-        lvLeader = 2;
-        lvMinion = 0;
-        numOfMinions = 2;
-    }
-    // levels (< -2) and (> 2)
-    else
-    {
-        do {
-            // the %200 limits level deprec at high levels
-            lvLeader = gConfig->fnRandTop((level % 200) + 1, 50);
-            lvMinion = gConfig->fnRandTop(lvLeader, 75);
-            numOfMinions = (level - lvLeader)/lvMinion;
-        } while (numOfMinions < 2);
-    }
+    // the %200 limits level deprec at high levels
+    lvLeader = gConfig->fnRandTop((level % 200), 50);
 
+    if (lvLeader < 2)
+        lvMinion = 1;
+    else
+        lvMinion = gConfig->fnRandTop(lvLeader, 50);
+
+    numOfMinions = (level - lvLeader)/lvMinion;
+
+
+    // form group - by levels
     do {
         if (leader.makeByLevel(lvLeader))
             if (minion.makeByLevel(lvMinion))

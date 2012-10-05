@@ -1,6 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <cmath>
 #include <QObject>
 #include <QString>
 #include "c_spell.h"
@@ -24,6 +25,7 @@ public:
     QString XP;
     int maxXP();
 
+
     // spells
     QList<c_Spell*> Spells;
 
@@ -45,6 +47,7 @@ public:
     QString nameRand();
     QString raceRand();
     QString vocRand();
+    void incrLevel();
 
 signals:
     void levelUp();

@@ -39,12 +39,15 @@ int Entity::Encumbrance()
 
 int Entity::maxXP()
 {
-    int Lv = Level.toInt();
-    int xp = 100;
+    // xp for next level is calculated on specific
+    // exponential fn curve centered around level 150
 
-    // calc level increases - TODO: FIXME @ higher levels
-    xp = xp + (100 * Entity::fnFib(Lv + 2));
-    return xp;
+    float Lv = Level.toFloat();
+    float a = 1.5e8; // 150 million (base value)
+    float c = 1.095; // coeffecient
+    float h = 150.0; // bend
+
+    return (int)(a * pow(c, (Lv - h)) );
 }
 
 int Entity::maxEncumbrance()
@@ -125,3 +128,10 @@ int Entity::fnFib(int value)
 
     return build.at(2);
 }
+
+void Entity::incrLevel()
+{
+    XP = tr("0");
+    Level = QString().number(Level.toInt() + 1);
+}
+

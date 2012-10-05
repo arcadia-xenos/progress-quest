@@ -327,7 +327,7 @@ int c_Config::fnPercentOf(int value, int of) {
 int c_Config::fnRandTop(int value, int percent) {
 
     // sanity
-    if (value < 2) return 1;
+    if (value < 2) return 0 ;
 
     int p  = c_Config::fnPercent(value, percent);
     int rp = c_Config::fnPercent(value, 100 - percent);
