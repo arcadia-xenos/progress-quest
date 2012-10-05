@@ -255,6 +255,9 @@ bool c_Monster::makeMounted(int level)
 {
     // trys to create a pair of monsters operating as a unit
 
+    // sanity - blow off lowest levels
+    if (level < 3) return false;
+
     int tryCount = 7;
     int lvTryCount = 50;
 
@@ -270,20 +273,11 @@ bool c_Monster::makeMounted(int level)
 
     // first find a level combination (cheaper than feeding it through makeByLevel)
     do {
-        if ( (level > 1) || (level < -1) ) {
-            // rand upper (abs) 1/2 of level
-            lvRider = gConfig->fnRandTop(level, 50);
-            lvMount = gConfig->fnRandTop(lvRider, 50);
-            if ( lvRider + lvMount == level )
-                lvFound = true;
-        }
-        else
-        {
-            // the -1,0,+1 area is tricky for combined, calc it
+        // rand upper (abs) 1/2 of level
+        lvRider = gConfig->fnRandTop(level, 50);
+        lvMount = gConfig->fnRandTop(lvRider, 50);
+        if ( lvRider + lvMount == level )
             lvFound = true;
-            lvRider = 1 * level;
-            lvMount = lvRider % level ;
-        }
         lvTryCount--;
     } while ( (! lvFound) && (lvTryCount > 0) );
 

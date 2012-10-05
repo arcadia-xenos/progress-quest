@@ -483,13 +483,18 @@ void MainWindow::setMonster()
 {
     bool success(false);
 
-    // fill out monster - POSSIBLE INFINITE LOOP (shouldn't be though ^_^)
+    // determine monster level from player's
+    int Lv = Player->Level.toInt();
+    Lv = Lv - (rand() % 10); // reduce monster lv up to -9 levels
+    if (Lv < 0) Lv = 0; // no less than 0
+
+    // fill out monster
     do {
         curMonster->clear();
 
-        if (    curMonster->makeByLevel(Player->Level.toInt()) ||
-                curMonster->makeMounted(Player->Level.toInt()) ||
-                curMonster->makeGroup(Player->Level.toInt())
+        if (    curMonster->makeByLevel(Lv) ||
+                curMonster->makeMounted(Lv) ||
+                curMonster->makeGroup(Lv)
            )
             success = true;
     } while (! success);
