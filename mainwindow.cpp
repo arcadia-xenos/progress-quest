@@ -244,7 +244,7 @@ void MainWindow::initPlayer()
     //c_Item *weapon = new c_Item;
     //c_Item *sheild = new c_Item;
     //QList<c_Item*> armor;
-    int index(0);
+    int index(0), i(0);
 
     // rand traits
     Player->Name = Player->nameRand();
@@ -265,11 +265,15 @@ void MainWindow::initPlayer()
     for(int i(0); i < 9; i++) {
         Player->Armor.append(new c_Item);
     }
-    for (int i(0); i < 2; i++) {
+    // 2 *unique* armors - not the same one twice
+    do {
         index = rand() % Player->Armor.size();
-        delete Player->Armor[index];
-        Player->Armor[index] = MainWindow::makeEqByGrade(pq_equip_armor, -2);
-    }
+        if (Player->Armor.at(index)->Name() == tr("")) {
+            delete Player->Armor[index];
+            Player->Armor[index] = MainWindow::makeEqByGrade(pq_equip_armor, -2);
+            i++;
+        }
+    } while (i < 2);
 
     // finally, money to drink at the bar with
     Player->Gold = 10;
