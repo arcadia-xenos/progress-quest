@@ -1,6 +1,7 @@
 #ifndef C_MONSTER_H
 #define C_MONSTER_H
 
+#include <cmath>
 #include <QObject>
 #include <QString>
 #include <QList>
@@ -23,11 +24,10 @@ public:
     bool makeMountedRange(int lowest_level, int highest_level);
     bool makeGroup(int level);
 
-    void clear();
-
     int winXP();
 
-    void addSpecial();
+    void makeSpecial(int level);
+
     void addHealth();
     void addAge();
     void addCast();
@@ -36,7 +36,9 @@ public:
     bool isMounted;
     bool isGroup;
     bool isSpecial;
-    
+
+    void clear();
+
 signals:
     
 public slots:
@@ -60,7 +62,7 @@ private:
     bool dropsFormatted;
 
     void makeRandMonster();
-
+    QStringList pickSpcByLevel(int level);
 };
 
 #endif // C_MONSTER_H

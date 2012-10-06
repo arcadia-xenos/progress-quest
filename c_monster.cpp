@@ -76,12 +76,12 @@ int c_Monster::winXP()
         // zero level monsters
         if (lv < 1) {
             lv = 1;
-            base_xp = 5;
+            base_xp = 25; // counters low level drag
         }
 
         // special bonus
         if (isSpecial)
-            base_xp = 15;
+            base_xp = (int)((float)base_xp * 1.5);
 
         awardXP = lv * base_xp;
     }
@@ -123,7 +123,7 @@ void c_Monster::makeRandMonster()
     if (rand() % 3 == 0) c_Monster::addSize(); // -5..+5
 
     // special - can increase levels drastically (up to +150?)
-    if (rand() % 10 == 0) c_Monster::addSpecial();
+    //if (rand() % 10 == 0) c_Monster::makeSpecial();
 }
 
 void c_Monster::addAge()
@@ -158,21 +158,65 @@ void c_Monster::addSize()
     mod_values.append(cdata.at(1).toInt());
 }
 
-void c_Monster::addSpecial()
+void c_Monster::makeSpecial(int level)
 {
-    QStringList cdata;
-    cdata = gConfig->MonSpecial.at(rand() % gConfig->MonSpecial.size()).split("|");
+    // non-reentrent
+    if (! isSpecial) {
+        QStringList list, cdata;
 
-    // a "special" monster is a new race of sorts (prepended and capped "mod", for now)
-    mods.prepend(gConfig->capWords(cdata.at(0)));
-    mod_values.prepend(cdata.at(1).toInt());
-    isSpecial = true;
+        // select the closest special bonus (should be multiples, randomize)
+        list = c_Monster::pickSpcByLevel(level);
+        cdata = list.at(rand() % list.size()).split("|");
+
+        // a "special" monster is a new race of sorts
+        monster_race = gConfig->capWords(gConfig->fnInterpStr(cdata.at(0), monster_race));
+        monster_level += cdata.at(1).toInt();
+        isSpecial = true;
+    }
+}
+
+QStringList c_Monster::pickSpcByLevel(int level)
+{
+    int curSpcLevel(0), curLv(0), closestDiff(9999), closestFind(0);
+    QStringList finds;
+    finds.clear();
+
+    // traverse all specials
+    for(int i(0); i < gConfig->MonSpecial.size(); i++) {
+
+        curSpcLevel = gConfig->MonSpecial.at(i).split("|").at(1).toInt();
+        curLv = monster_level + curSpcLevel;
+
+        //exact match
+        if (level - curLv == 0) {
+            finds.append(gConfig->MonSpecial.at(i)); // add to finds
+        }
+        else
+        {
+            // if closer record and go on
+            if (abs(level - curLv) < closestDiff) {
+                closestDiff = abs(level - curLv);
+                closestFind = curSpcLevel;
+            }
+        }
+    }
+
+    // no exacts found - do closest matchs
+    if (finds.empty()) {
+        for(int i(0); i < gConfig->MonSpecial.size(); i++) {
+            curSpcLevel = gConfig->MonSpecial.at(i).split("|").at(1).toInt();
+            if (curSpcLevel == closestFind) finds.append(gConfig->MonSpecial.at(i));
+        }
+    }
+
+    return finds;
 }
 
 bool c_Monster::makeByLevel(int level)
 {
     // be careful modifing this tryCount, used iteratively elsewhere
     int tryCount = 5;
+    int chanceSpc(0);
     QStringList cdata;
 
     // attempt to align highest available monster for level
@@ -185,41 +229,10 @@ bool c_Monster::makeByLevel(int level)
         monster_level = cdata.at(1).toInt();
         drops.append(cdata.at(2));
 
-        // specials heuristics - applies knowledge of mod data
-        if (level - monster_level > 150) {
-            do {
-                mods.clear();
-                mod_values.clear();
-                c_Monster::addSpecial();
-            } while (mod_values.at(0) < 100);
-        }
-        else if (level - monster_level > 100) {
-            do {
-                mods.clear();
-                mod_values.clear();
-                c_Monster::addSpecial();
-            } while ( (mod_values.at(0) < 50) &&
-                      (mod_values.at(0) > 100) );
-        }
-        else if (level - monster_level > 50) {
-            do {
-                mods.clear();
-                mod_values.clear();
-                c_Monster::addSpecial();
-            } while ( (mod_values.at(0) < 20) &&
-                      (mod_values.at(0) > 50) );
-        }
-        else
-        {
-            // low level random chance of low special
-            if (rand() % 10 == 0) {
-                do {
-                    mods.clear();
-                    mod_values.clear();
-                    c_Monster::addSpecial();
-                } while (mod_values.at(0) > 20);
-            }
-        }
+        // random chance of special monster - incr with level
+        chanceSpc = 10 - (level / 10);
+        if (chanceSpc < 2) chanceSpc = 1;
+        if (rand() % chanceSpc == 0) c_Monster::makeSpecial(level);
 
         // total range of mods for level displacement -20..+20
         if (rand() % 3 == 0) c_Monster::addAge(); // -5..+5
@@ -324,7 +337,7 @@ bool c_Monster::makeMountedRange(int lowest_level, int highest_level)
 bool c_Monster::makeGroup(int level)
 {
     // for my sanity - takes away nasty low level cases
-    if (level < 8) return false;
+    if (level < 20) return false;
 
     // trys to create a gang of monsters with combined level
     c_Monster minion;
@@ -342,7 +355,8 @@ bool c_Monster::makeGroup(int level)
     if (lvLeader < 2)
         lvMinion = 1;
     else
-        lvMinion = gConfig->fnRandTop(lvLeader, 50);
+        //lvMinion = gConfig->fnRandTop(lvLeader, 50);
+        lvMinion = rand() % (lvLeader - 1) + 1;
 
     numOfMinions = (level - lvLeader)/lvMinion;
 
@@ -358,7 +372,7 @@ bool c_Monster::makeGroup(int level)
     if (found) {
         c_Monster::clear();
         if (numOfMinions < 2)
-            discription = minion.Discription()+ tr(" ") + tr(", travelling with ") +
+            discription = minion.Discription()+ tr(", traveling with ") +
                     gConfig->Indefinite(leader.Discription());
         else
             discription = tr("group of ") + QString().number(numOfMinions) + tr(" ") +
@@ -368,7 +382,7 @@ bool c_Monster::makeGroup(int level)
         monster_race = tr("Monster Group");
         monster_level = leader.Level().toInt() + minion.Level().toInt() * numOfMinions;
         drops.append(leader.Drops());
-        for (int i(0); i < gConfig->fnPercent(numOfMinions, 10); i++)
+        for (int i(0); i < gConfig->fnPercent(numOfMinions, 25); i++)
                 drops.append(minion.Drops());
         dropsFormatted=true;
         isGroup = true;

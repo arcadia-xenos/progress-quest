@@ -34,6 +34,9 @@ public:
     c_Item*         Sheild;
     QList<c_Item*>  Armor;
 
+    // used for buying new equipment
+    c_Item*         Purchase;
+
     // inventory
     QList<c_Item*> Inventory;
     QList<int> Quantity;

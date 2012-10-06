@@ -51,8 +51,10 @@ private:
     void addMonDrop();
     QString sellInvItem();
     void rmInvItem();
-    void buyNewEq();
 
+    void buyNewEq();
+    bool canBuyNewEq(t_pq_equip eqtype);
+    c_Item *getPurchaseItem(t_pq_equip eqtype);
     c_Item* makeEqByGrade(t_pq_equip eqtype , int grade);
     c_Item* upgradeEq(t_pq_equip eqtype , int grade);
 

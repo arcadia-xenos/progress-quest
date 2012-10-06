@@ -11,10 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    // set current plot act
-    Act = 0;
-
-    State = pq_state_heading_to_killing_fields;
 
     // timer drive
     pb_action_timer = new QTimer(this);
@@ -30,9 +26,18 @@ MainWindow::MainWindow(QWidget *parent) :
     // setup / show ui
     ui->setupUi(this);
 
+    // set current plot act (before initFrames)
+    Act = 0;
+
     // inits for data to the ui
     MainWindow::initPlayer();
     MainWindow::initFrames();
+
+    //set state must be after initPlayer (for canBuy.. to work)
+    if (! MainWindow::canBuyNewEq(pq_equip_any))
+        State = pq_state_heading_to_killing_fields;
+    else
+        State = pq_state_buying_new_equip;
 
     // start actions
     MainWindow::setAction();
@@ -94,7 +99,7 @@ void MainWindow::incr_pb_plot_value()
     QString actName;
     actName = "Act ";
 
-    int value = ui->pb_plot->value() + 6;
+    int value = ui->pb_plot->value() + (rand() % 6 + 1);
     if ( value < ui->pb_plot->maximum())
     {
         // progress plot
@@ -125,7 +130,7 @@ void MainWindow::incr_pb_plot_value()
 
 void MainWindow::incr_pb_quest_value()
 {
-    int value = ui->pb_quest->value() + 12;
+    int value = ui->pb_quest->value() + (rand() % 4 + 1);
     if ( value < ui->pb_quest->maximum())
     {
         // progress quest
@@ -170,14 +175,15 @@ void MainWindow::incr_pb_experience_value()
         {
             // level up
 
-            //      reset progress bar
-            value = (value % ui->pb_experience->maximum());
-            ui->pb_experience->setValue(value);
-
             //      incr level
             Player->incrLevel();
             ui->tbl_traits->setCurrentCell(3,1);
             ui->tbl_traits->currentItem()->setText(Player->Level);
+
+            //      reset progress bar
+            value = (value % ui->pb_experience->maximum());
+            ui->pb_experience->setValue(gConfig->fnPercentOf(value,Player->maxXP()));
+
 
             // win better stats
             MainWindow::winStats();
@@ -276,7 +282,7 @@ void MainWindow::initPlayer()
     } while (i < 2);
 
     // finally, money to drink at the bar with
-    Player->Gold = 10;
+    Player->Gold = 25;
 }
 
 
@@ -414,7 +420,17 @@ void MainWindow::setAction()
         break;;
     case pq_state_buying_new_equip:
         // shopping!!
-        Action = tr("Negotiating purchase of new equipment");
+        Action = tr("Negotiating purchase of new ") +
+                Player->Purchase->Name() + tr(" ");
+        switch (Player->Purchase->Type()) {
+        case pq_equip_weapon:
+            Action += tr("(weapon)"); break;;
+        case pq_equip_shield:
+            Action += tr("(shield)"); break;;
+        case pq_equip_armor:
+            Action += tr("(armor)"); break;;
+        case pq_equip_any: break;;
+        }
         pb_action_timer->setInterval(35);
         break;;
     default:
@@ -441,12 +457,15 @@ void MainWindow::tranState()
         State = pq_state_selling_off;
         break;;
     case pq_state_selling_off:
-        if (Player->Inventory.empty())
-            State = pq_state_buying_new_equip;
+        if (Player->Inventory.empty()) {
+            if (MainWindow::canBuyNewEq(pq_equip_any))
+                State = pq_state_buying_new_equip;
+            else
+                State = pq_state_heading_to_killing_fields;
+        }
         break;;
     case pq_state_buying_new_equip:
-        if (Player->Gold < Player->Level.toInt() *
-                (80 + gConfig->fnPercent(Player->Level.toInt(), 80)) )
+        if (! MainWindow::canBuyNewEq(pq_equip_any))
             State = pq_state_heading_to_killing_fields;
         break;;
     default:
@@ -482,25 +501,35 @@ void MainWindow::addMonDrop()
 
     c_Item* drop;
 
+    // traverse all drop for this monster
     for(int i(0); i < curMonster->Drops().size(); i++) {
 
         drop = new c_Item;
-        int found(-1);
+        bool found(false);
 
+        // create a monster drop item
         drop->setName(curMonster->Drops().at(i));
         drop->Weight = 1;
+        drop->setType(pq_equip_any);
+        if (curMonster->Level().toInt() < 0)
+            drop->setPrice(0);
+        else
+            drop->setPrice(curMonster->Level().toInt());
 
-        // if found in inventory, add another
+        // if found in inventory (match name and price), add another
         for(int t = 0; t < Player->Inventory.size(); t++) {
-            if (Player->Inventory.at(t)->Name() == drop->Name()) {
+            if ( Player->Inventory.at(t)->Name() == drop->Name() &&
+                    Player->Inventory.at(t)->Appraisal() == drop->Appraisal()
+                 )
+            {
                 Player->Quantity[t] = Player->Quantity.at(t) + 1;
                 ui->tbl_inventory->setCurrentCell(t+1, 1);
-                found = t;
+                found = true;
             }
         }
 
         // add if not
-        if (found < 0) {
+        if (! found) {
             Player->Inventory.append(drop);
             Player->Quantity.append(1);
             ui->tbl_inventory->setCurrentCell(ui->tbl_inventory->rowCount(), 1);
@@ -511,7 +540,7 @@ void MainWindow::addMonDrop()
     if (curMonster->isSpecial) {
         drop = new c_Item;
         drop->makeSpecial();
-        drop->addAdjMod();
+        if (rand() % 2 == 0) drop->addAdjMod();
         Player->Inventory.append(drop);
         Player->Quantity.append(1);
         ui->tbl_inventory->setCurrentCell(ui->tbl_inventory->rowCount(), 1);
@@ -523,14 +552,14 @@ void MainWindow::addMonDrop()
 
 void MainWindow::rmInvItem()
 {
-    // this is the old PQ v6 way of sale value
-    int saleValue = Player->Quantity.last() * Player->Level.toInt();
+    // total sale gold value
+    int saleValue = Player->Quantity.last() * Player->Inventory.last()->Appraisal();
 
     // trade items for gold
+    Player->Gold += saleValue;
     Player->Inventory.removeLast();
     Player->Quantity.removeLast();
     ui->tbl_inventory->removeRow(ui->tbl_inventory->rowCount());
-    Player->Gold += saleValue;
 
     MainWindow::updInvTbl();
 }
@@ -541,7 +570,7 @@ QString MainWindow::sellInvItem()
     // contents as you go
 
     QString build;
-    int saleValue = Player->Quantity.last() * Player->Level.toInt();
+    int saleValue = Player->Quantity.last() * Player->Inventory.last()->Appraisal();
 
     // build a return: "q whatever[s] for n gold"
     build = QString().number(Player->Quantity.last()) + tr(" ");
@@ -555,27 +584,6 @@ QString MainWindow::sellInvItem()
 
     return build;
 }
-
-void MainWindow::updInvTbl()
-{
-    ui->tbl_inventory->clearContents();
-    ui->tbl_inventory->setRowCount(1 + Player->Inventory.size());
-
-    // gold first
-    ui->tbl_inventory->setItem(0, 0, new QTableWidgetItem("Gold") );
-    ui->tbl_inventory->setItem(0, 1, new QTableWidgetItem(QString().number(Player->Gold)) );
-
-    // remaining inv list
-    for (int i(0); i < Player->Inventory.size(); i++) {
-        ui->tbl_inventory->setItem(i+1, 0, new QTableWidgetItem(Player->Inventory.at(i)->Name()) );
-        ui->tbl_inventory->setItem(i+1, 1, new QTableWidgetItem(QString().number(Player->Quantity.at(i))) );
-    }
-
-    ui->lbl_inventory->setText( tr("Inventory ") +\
-                                QString().number(Player->Encumbrance()) +\
-                                tr(" units") );
-}
-
 
 void MainWindow::winStats()
 {
@@ -645,49 +653,50 @@ void MainWindow::winSpells()
     MainWindow::updSpellTbl();
 }
 
-
-void MainWindow::buyNewEq()
+bool MainWindow::canBuyNewEq(t_pq_equip eqtype)
 {
-    c_Item* equip;
-    t_pq_equip select;
+    // chk for spend limit must populate player's purchase item
+    int spendCap = gConfig->fnPercent(Player->Gold, 40); // 40% total gold
+    Player->Purchase = MainWindow::getPurchaseItem(eqtype);
+    return (Player->Purchase->Appraisal() <= spendCap);
+}
+
+c_Item* MainWindow::getPurchaseItem(t_pq_equip eqtype)
+{
+    c_Item* itemForPurchase;
+    t_pq_equip eqSelect = eqtype;
     int pick(0);
 
-    // randomly pick equipment slot
-    select = (t_pq_equip)(rand() % 3); // random equip
+    // randomize "any" type to weapon, shield, or armor
+    if (eqtype == pq_equip_any) {
+        int r = rand() % 11; // total peices of eq
+        if      (r == 0) eqSelect = pq_equip_weapon;
+        else if (r == 1) eqSelect = pq_equip_shield;
+        else eqSelect = pq_equip_armor;
+    }
 
-    switch(select) {
+    // set item to purchase (slot used for armor slots)
+    switch(eqSelect) {
 
     case pq_equip_weapon:
-
         // if not filled - buy first one
         if (Player->Weapon->Name() == tr("") ) {
-            delete Player->Weapon;
-            Player->Weapon = MainWindow::makeEqByGrade(select, -4);
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
+            itemForPurchase = MainWindow::makeEqByGrade(eqSelect, -4);
         }
         else
         {
             // upgrade
-            equip = MainWindow::upgradeEq(select, Player->Weapon->Grade());
-            delete Player->Weapon;
-            Player->Weapon = equip;
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
+            itemForPurchase = MainWindow::upgradeEq(eqSelect, Player->Weapon->Grade());
         }
         break;;
 
     case pq_equip_shield:
-
         if (Player->Sheild->Name() == tr("")) {
-            delete Player->Sheild;
-            Player->Sheild = MainWindow::makeEqByGrade(pq_equip_shield, Player->Level.toInt());
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
+            itemForPurchase = MainWindow::makeEqByGrade(pq_equip_shield, Player->Level.toInt());
         }
         else
         {
-            equip = MainWindow::upgradeEq(select, Player->Sheild->Grade());
-            delete Player->Sheild;
-            Player->Sheild = equip;
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 4) * 10) ); // cost = 40%-60%
+            itemForPurchase = MainWindow::upgradeEq(eqSelect, Player->Sheild->Grade());
         }
         break;;
     case pq_equip_armor:
@@ -696,32 +705,66 @@ void MainWindow::buyNewEq()
         pick = rand() % Player->Armor.size();
 
         if (Player->Armor.at(pick)->Name() == tr("")){
-            delete Player->Armor[pick];
-            Player->Armor[pick] = MainWindow::makeEqByGrade(pq_equip_armor, Player->Level.toInt());
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 2) * 10) ); // cost = 20%-40%
+            itemForPurchase = MainWindow::makeEqByGrade(pq_equip_armor, Player->Level.toInt());
+            itemForPurchase->setASlot(pick);
         }
         else
         {
-            equip = MainWindow::upgradeEq(select, Player->Armor.at(pick)->Grade());
-            delete Player->Armor[pick];
-            Player->Armor[pick] = equip;
-            Player->Gold -= gConfig->fnPercent(Player->Gold, ((rand() % 3 + 3) * 10) ); // cost = 30%-50%
+            itemForPurchase = MainWindow::upgradeEq(eqSelect, Player->Armor.at(pick)->Grade());
+            itemForPurchase->setASlot(pick);
         }
+        break;;
+    case pq_equip_any:
+        break;;
+    }
+    return itemForPurchase;
+}
+
+void MainWindow::buyNewEq()
+{
+    // buy purchase item
+    Player->Gold -= Player->Purchase->Appraisal();
+
+    // drop old and equip new
+    switch(Player->Purchase->Type()) {
+    case pq_equip_weapon:
+        delete Player->Weapon;
+        Player->Weapon = Player->Purchase;
+        break;;
+    case pq_equip_shield:
+        delete Player->Sheild;
+        Player->Sheild = Player->Purchase;
+        break;
+    case pq_equip_armor:
+        delete Player->Armor[Player->Purchase->getASlot()];
+        Player->Armor[Player->Purchase->getASlot()] = Player->Purchase;
+        break;;
+    case pq_equip_any:
+        //fault - shouldn't happen
         break;;
     }
 
+    //delete Player->Purchase;
+
+    MainWindow::updInvTbl();
     MainWindow::updEquipTbl();
 }
 
 c_Item* MainWindow::makeEqByGrade(t_pq_equip eqtype, int grade)
 {
     c_Item* equip = new c_Item;
+    t_pq_equip eqSelect = eqtype;
 
-    switch(eqtype) {
+    // handle "any" type
+    if (eqSelect == pq_equip_any)
+        eqSelect = static_cast<t_pq_equip>(rand() % 3);
+
+    // main types
+    switch(eqSelect) {
 
     case pq_equip_weapon:
 
-        equip->makeClosestGrade(eqtype, grade);
+        equip->makeClosestGrade(eqSelect, grade);
 
         // 2 possible mods, 50% chnc each: player level affects pos/neg
         for(int i(0); i < 2; i++) {
@@ -738,7 +781,7 @@ c_Item* MainWindow::makeEqByGrade(t_pq_equip eqtype, int grade)
 
     case pq_equip_shield:
 
-        equip->makeClosestGrade(eqtype, grade);
+        equip->makeClosestGrade(eqSelect, grade);
 
         // 2 possible mods, 50% chnc each: player level affects pos/neg
         for(int i(0); i < 2; i++) {
@@ -755,7 +798,7 @@ c_Item* MainWindow::makeEqByGrade(t_pq_equip eqtype, int grade)
 
     case pq_equip_armor:
 
-        equip->makeClosestGrade(eqtype, grade);
+        equip->makeClosestGrade(eqSelect, grade);
 
         // 2 possible mods, 50% chnc each: player level affects pos/neg
         for(int i(0); i < 2; i++) {
@@ -768,6 +811,9 @@ c_Item* MainWindow::makeEqByGrade(t_pq_equip eqtype, int grade)
         // set bonus to make up differance in grade
         equip->setBonus(grade - equip->Grade());
 
+        break;;
+
+    case pq_equip_any:
         break;;
     }
 
@@ -777,21 +823,47 @@ c_Item* MainWindow::makeEqByGrade(t_pq_equip eqtype, int grade)
 c_Item* MainWindow::upgradeEq(t_pq_equip eqtype, int grade)
 {
     c_Item* equip = new c_Item;
+    t_pq_equip eqSelect = eqtype;
 
-    switch (eqtype) {
+    if (eqSelect == pq_equip_any)
+        eqSelect = static_cast<t_pq_equip>(rand() % 3);
+
+    switch (eqSelect) {
     case pq_equip_weapon:
-        equip = MainWindow::makeEqByGrade(eqtype, grade + 1);
+        equip = MainWindow::makeEqByGrade(eqSelect, grade + 1);
         break;;
     case pq_equip_shield:
-        equip = MainWindow::makeEqByGrade(eqtype, grade + 1);
+        equip = MainWindow::makeEqByGrade(eqSelect, grade + 1);
         break;;
     case pq_equip_armor:
-        equip = MainWindow::makeEqByGrade(eqtype, grade + 1);
+        equip = MainWindow::makeEqByGrade(eqSelect, grade + 1);
+        break;;
+    case pq_equip_any:
         break;;
     }
-
     return equip;
 }
+
+void MainWindow::updInvTbl()
+{
+    ui->tbl_inventory->clearContents();
+    ui->tbl_inventory->setRowCount(1 + Player->Inventory.size());
+
+    // gold first
+    ui->tbl_inventory->setItem(0, 0, new QTableWidgetItem("Gold") );
+    ui->tbl_inventory->setItem(0, 1, new QTableWidgetItem(QString().number(Player->Gold)) );
+
+    // remaining inv list
+    for (int i(0); i < Player->Inventory.size(); i++) {
+        ui->tbl_inventory->setItem(i+1, 0, new QTableWidgetItem(Player->Inventory.at(i)->Name()) );
+        ui->tbl_inventory->setItem(i+1, 1, new QTableWidgetItem(QString().number(Player->Quantity.at(i))) );
+    }
+
+    ui->lbl_inventory->setText( tr("Inventory ") +\
+                                QString().number(Player->Encumbrance()) +\
+                                tr(" units") );
+}
+
 
 void MainWindow::updEquipTbl()
 {

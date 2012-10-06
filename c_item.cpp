@@ -14,6 +14,9 @@ void c_Item::clear()
     modprefix.clear();
     itemBonus = 0;
     Weight =0;
+    itemType = pq_equip_any;
+    price = 0;
+    armorSlot = 0;
 }
 
 QString c_Item::Name()
@@ -50,9 +53,9 @@ QString c_Item::Name()
     return rtn;
 }
 
-void c_Item::setName(QString setname)
+void c_Item::setName(QString itemName)
 {
-    basename = setname;
+    basename = itemName;
 }
 
 
@@ -68,13 +71,39 @@ void c_Item::setBonus(int bonus)
 
 int c_Item::Appraisal()
 {
-    int price = c_Item::Grade();
 
-    // lowest price value
-    if (price < 1)
-        price = 0; //grats, you're worthless!
+    // factored appraisal
+    if (price == 0) {
+        int factor(0);
+        int g = c_Item::Grade();
 
+        // set super low grade
+        if (g < 0) {
+            g = 1;
+            factor = 3;
+        }
+        // factor by grade
+        else if (g < 20)    factor = 7;
+        else if (g < 50)    factor = 5;
+        else if (g < 100)   factor = 3;
+        else                factor = 1;
+
+        // factor by type (any = by grade only)
+        if      (itemType == pq_equip_weapon) factor += 2;
+        else if (itemType == pq_equip_shield) factor++;
+        else if (itemType == pq_equip_armor)  factor++;
+
+        // set price
+        price = g * factor;
+    }
+
+    // appraised or set price
     return price;
+}
+
+void c_Item::setPrice(int gold)
+{
+    price = gold;
 }
 
 int c_Item::Grade()
@@ -95,6 +124,28 @@ int c_Item::Grade()
     return g;
 }
 
+t_pq_equip c_Item::Type()
+{
+    return itemType;
+}
+
+void c_Item::setType(t_pq_equip eqType)
+{
+    itemType = eqType;
+}
+
+
+// armor slot access is used by equip purchase
+void c_Item::setASlot(int slot)
+{
+    armorSlot=slot;
+}
+
+int c_Item::getASlot()
+{
+    return armorSlot;
+}
+
 void c_Item::makeWeapon()
 {
     QStringList cdata;
@@ -102,7 +153,7 @@ void c_Item::makeWeapon()
     basename  = cdata.at(0);            //name
     basegrade = cdata.at(1).toInt();    //value
     Weight = 1;
-
+    itemType = pq_equip_weapon;
 }
 
 void c_Item::addWeaponMod()
@@ -130,7 +181,7 @@ void c_Item::makeSheild()
     basename  = cdata.at(0);            //name
     basegrade = cdata.at(1).toInt();    //value
     Weight = 1;
-
+    itemType = pq_equip_shield;
 }
 
 void c_Item::makeArmor()
@@ -140,7 +191,7 @@ void c_Item::makeArmor()
     basename  = cdata.at(0);            //name
     basegrade = cdata.at(1).toInt();    //value
     Weight = 1;
-
+    itemType = pq_equip_armor;
 }
 
 void c_Item::addDefMod()
@@ -167,7 +218,7 @@ void c_Item::makeBitem()
     basename = gConfig->BoringItems.at(rand() % gConfig->BoringItems.size());
     basegrade = 1;
     Weight = 1;
-
+    itemType = pq_equip_any;
 }
 
 void c_Item::makeSpecial()
@@ -175,7 +226,7 @@ void c_Item::makeSpecial()
     basename = gConfig->Specials.at(rand() % gConfig->Specials.size());
     basegrade = 50 + (rand() % 20 - 10); // [40..59]
     Weight = 1;
-
+    itemType = pq_equip_any;
 }
 
 void c_Item::addOfMod()
@@ -198,8 +249,14 @@ void c_Item::addAdjMod()
 void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
 {
     QStringList* itemList;
+    t_pq_equip eqSelect = iType;
 
-    switch(iType) {
+    // handle "any" selection
+    if (eqSelect == pq_equip_any)
+        eqSelect = static_cast<t_pq_equip>(rand() % 3); //random type
+
+    // choose list by type
+    switch(eqSelect) {
     case pq_equip_weapon:
         itemList = &gConfig->Weapons;
         break;;
@@ -208,6 +265,8 @@ void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
         break;;
     case pq_equip_armor:
         itemList = &gConfig->Armors;
+        break;;
+    case pq_equip_any:
         break;;
     }
 
@@ -257,5 +316,7 @@ void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
     if (found) basegrade = grade;
     else basegrade = closestGrade;
     Weight = 1;
+    itemType = eqSelect;
+
 }
 

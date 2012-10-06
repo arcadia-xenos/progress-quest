@@ -173,7 +173,7 @@ c_Config::c_Config()
              << "Hogbird|3|curl" << "Wolog|4|lemma";
 
     MonHealth << "dying *|-5" << "comatose *|-4" << "decrepid *|-3" << "sickly *|-2" << "undernourished *|-1"
-              << "well-fed *|+1" << "trim *|+2" << "muscled *|+3" << "robust *|+4" << "glowing *|+5";
+              << "well-fed *|+1" << "husky *|+2" << "muscled *|+3" << "robust *|+4" << "glowing *|+5";
 
     MonAge << "fetal *|-5" << "baby *|-4" << "preadolescent *|-3" << "teenage *|-2" << "underage *|-1"
            << "mature *| +1" << "elder *|+2" << "veteran *|+3" << "senior *|+4" << "ancient *|+5";
@@ -182,7 +182,7 @@ c_Config::c_Config()
             << "greater *|+1" << "massive *|+2" << "enormous *|+3" << "giant *|+4" << "titanic *|+5";
 
     MonCast << "drunk *|-5" << "* day-dreamer|-4" << "lazy *|-3" << "* slacker|-2" << "* novice|-1"
-            << "* warrior|+1" << "* elite|+2"  << "* leiutenent|+3" << "* shaman|+4" << "* warcheif|+5" ;
+            << "* warrior|+1" << "* elite|+2"  << "* leiutenent|+3" << "* shaman|+4" << "* chief|+5" ;
 
     MonSpecial << "battle-*|+5" << "* thug|+5" << "gelatinous *|+5" << "master *|+10" << "poisonous *|+10"
                << "* hero |+10" << "spellcasting *|+20" << "desert *|+20" << "* swashbuckler|+20" << "double-headed *|+30"
@@ -254,13 +254,14 @@ QString c_Config::capWords(QString string)
     QString build;
     bool b = false; // word bound (space delim rule)
 
+    // traverse string from left to right
     for (int i = 0; i < string.size(); i++) {
         if (b) {
             // look for space to reset bound
             if (string.at(i) == QChar(' '))  {
                 b = false;
             }
-            build += string.at(i); // remaining (lc)
+            build += string.at(i); // case-irrelavent, possible spc
         }
         else
         {
@@ -271,7 +272,8 @@ QString c_Config::capWords(QString string)
             }
             else
             {
-                build += string.at(i); // add spaces
+                // spaces here - add
+                build += string.at(i);
             }
         }
     }

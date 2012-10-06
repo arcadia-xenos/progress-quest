@@ -14,14 +14,21 @@ public:
 
     // accessors
     QString Name();
-    void setName(QString setname);
+    void setName(QString itemName);
 
     int Bonus();
     void setBonus(int bonus);
 
     int Appraisal();
+    void setPrice(int gold);
 
     int Grade();
+
+    t_pq_equip Type();
+    void setType(t_pq_equip eqType);
+
+    void setASlot(int slot);
+    int getASlot();
 
 
     // methods
@@ -45,6 +52,8 @@ public:
     void clear();
 
 private:
+    t_pq_equip itemType;
+
     QString basename;
     int     basegrade;
 
@@ -53,6 +62,10 @@ private:
     QList<int>  modgrades;
 
     int itemBonus;
+
+    int price;
+
+    int armorSlot;
 };
 
 #endif // C_ITEM_H
