@@ -19,6 +19,7 @@ void c_Item::clear()
     armorSlot = 0;
 }
 
+// TODO: allviate processing on multiple calls
 QString c_Item::Name()
 {
     QString rtn;

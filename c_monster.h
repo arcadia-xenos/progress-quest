@@ -24,7 +24,7 @@ public:
     bool makeMountedRange(int lowest_level, int highest_level);
     bool makeGroup(int level);
 
-    int winXP();
+    unsigned long long winXP();
 
     void makeSpecial(int level);
 
@@ -57,7 +57,7 @@ private:
 
     QString discription;
     QString level;
-    int awardXP;
+    unsigned long long int awardXP;
 
     bool dropsFormatted;
 

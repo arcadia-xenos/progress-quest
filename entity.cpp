@@ -38,17 +38,18 @@ int Entity::Encumbrance()
     return build;
 }
 
-int Entity::maxXP()
+unsigned long long int Entity::maxXP()
 {
-    // xp for next level is calculated on specific
-    // exponential fn curve centered around level 150
+    // xp for next level is calculated by exp curve
+    // see pq7_level_advancement_curvatures.ggb (geogebra4 file)
+    // for more info
 
     float Lv = Level.toFloat();
-    float a = 1.5e8; // 150 million (base value)
-    float c = 1.095; // coeffecient
-    float h = 150.0; // bend
+    float base = 1130.0; // xp at bend level
+    float curvature = 1.09512; // coeffecient
+    float bend = 20.0; // start bending at level
 
-    return (int)(a * pow(c, (Lv - h)) );
+    return (int)(base * pow(curvature, (Lv - bend)) );
 }
 
 int Entity::maxEncumbrance()

@@ -160,10 +160,10 @@ void MainWindow::incr_pb_experience_value()
     if (State == pq_state_fight) {
 
         // incr player xp
-        Player->XP = Player->XP.number(Player->XP.toInt() + curMonster->winXP());
+        Player->XP = Player->XP.number(Player->XP.toULongLong() + curMonster->winXP());
 
         // create pb value from player percentage
-        int value = gConfig->fnPercentOf(Player->XP.toInt(), Player->maxXP());
+        int value = (int)(gConfig->fnPercentOf(Player->XP.toULongLong(), Player->maxXP()));
 
         // is < 100% ?
         if ( value < ui->pb_experience->maximum())
@@ -182,7 +182,7 @@ void MainWindow::incr_pb_experience_value()
 
             //      reset progress bar
             value = (value % ui->pb_experience->maximum());
-            ui->pb_experience->setValue(gConfig->fnPercentOf(value,Player->maxXP()));
+            ui->pb_experience->setValue((int)(gConfig->fnPercentOf((unsigned long long int)value,Player->maxXP())));
 
 
             // win better stats

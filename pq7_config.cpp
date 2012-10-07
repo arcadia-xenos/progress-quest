@@ -249,6 +249,7 @@ QString c_Config::toRoman(int value)
     return rtnNumerals;
 }
 
+// signif cost (0.11%)
 QString c_Config::capWords(QString string)
 {
     QString build;
@@ -326,6 +327,13 @@ int c_Config::fnPercentOf(int value, int of) {
         return (int)( ((float)value / (float)of) * 100.0 ) ;
 }
 
+unsigned long long int c_Config::fnPercentOf(unsigned long long int value, unsigned long long int of)
+{
+    return (unsigned long long int)( ((double)value / (double)of) * 100.0 );
+}
+
+
+// signif cost (0.02%)
 int c_Config::fnRandTop(int value, int percent) {
 
     // sanity
@@ -336,6 +344,7 @@ int c_Config::fnRandTop(int value, int percent) {
     return rand() % p + rp;
 }
 
+// signif cost (0.04%)
 QString c_Config::fnInterpStr(QString pattern, QString interpolation)
 {
     /*

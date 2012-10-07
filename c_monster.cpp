@@ -67,23 +67,25 @@ QString c_Monster::Level()
     return level;
 }
 
-int c_Monster::winXP()
+unsigned long long int c_Monster::winXP()
 {
-    if (awardXP <= 0) {
-        int lv = c_Monster::Level().toInt();
-        int base_xp = 10;
+    // monster xp based on parabolic curve
+    // see pq7_level_advancement_curvatures.ggb (geogebra4 file)
+    // for more info
 
-        // zero level monsters
-        if (lv < 1) {
-            lv = 1;
-            base_xp = 25; // counters low level drag
-        }
+    if (awardXP <= 0) {
+        // monster xp awards are lowish in value...
+        // float should handle it
+        float lv = c_Monster::Level().toFloat();
+        float base_xp = 10;
+        float factor = 17;
 
         // special bonus
         if (isSpecial)
-            base_xp = (int)((float)base_xp * 1.5);
+            base_xp +=  5.0; // careful
 
-        awardXP = lv * base_xp;
+        awardXP = (unsigned long long int)
+                (base_xp + (pow(lv,2.0) / pow(factor,2.0)) );
     }
 
     return awardXP;
@@ -231,7 +233,7 @@ bool c_Monster::makeByLevel(int level)
 
         // random chance of special monster - incr with level
         chanceSpc = 10 - (level / 10);
-        if (chanceSpc < 2) chanceSpc = 1;
+        if (chanceSpc < 2) chanceSpc = 1; // 100% at lv 90+
         if (rand() % chanceSpc == 0) c_Monster::makeSpecial(level);
 
         // total range of mods for level displacement -20..+20

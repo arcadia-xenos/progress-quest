@@ -23,7 +23,7 @@ public:
 
     // experience
     QString XP;
-    int maxXP();
+    unsigned long long maxXP();
 
 
     // spells
