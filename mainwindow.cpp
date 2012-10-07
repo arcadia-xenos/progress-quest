@@ -420,7 +420,8 @@ void MainWindow::setAction()
         break;;
     case pq_state_buying_new_equip:
         // shopping!!
-        Action = tr("Negotiating purchase of new ") +
+        Action = tr("Negotiating purchase of ") +
+                Player->purchType() +tr(" ") +
                 Player->Purchase->Name() + tr(" ");
         switch (Player->Purchase->Type()) {
         case pq_equip_weapon:
@@ -682,21 +683,25 @@ c_Item* MainWindow::getPurchaseItem(t_pq_equip eqtype)
         // if not filled - buy first one
         if (Player->Weapon->Name() == tr("") ) {
             itemForPurchase = MainWindow::makeEqByGrade(eqSelect, -4);
+            Player->setPurchNew(true);
         }
         else
         {
             // upgrade
             itemForPurchase = MainWindow::upgradeEq(eqSelect, Player->Weapon->Grade());
+            Player->setPurchNew(false);
         }
         break;;
 
     case pq_equip_shield:
         if (Player->Sheild->Name() == tr("")) {
             itemForPurchase = MainWindow::makeEqByGrade(pq_equip_shield, Player->Level.toInt());
+            Player->setPurchNew(true);
         }
         else
         {
             itemForPurchase = MainWindow::upgradeEq(eqSelect, Player->Sheild->Grade());
+            Player->setPurchNew(false);
         }
         break;;
     case pq_equip_armor:
@@ -707,11 +712,13 @@ c_Item* MainWindow::getPurchaseItem(t_pq_equip eqtype)
         if (Player->Armor.at(pick)->Name() == tr("")){
             itemForPurchase = MainWindow::makeEqByGrade(pq_equip_armor, Player->Level.toInt());
             itemForPurchase->setASlot(pick);
+            Player->setPurchNew(true);
         }
         else
         {
             itemForPurchase = MainWindow::upgradeEq(eqSelect, Player->Armor.at(pick)->Grade());
             itemForPurchase->setASlot(pick);
+            Player->setPurchNew(false);
         }
         break;;
     case pq_equip_any:

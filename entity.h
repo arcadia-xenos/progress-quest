@@ -36,6 +36,8 @@ public:
 
     // used for buying new equipment
     c_Item*         Purchase;
+    QString         purchType();
+    void            setPurchNew(bool is_new);
 
     // inventory
     QList<c_Item*> Inventory;
@@ -63,6 +65,7 @@ private:
     // random methods
     QString statRand(int basevalue, int offset);
     int fnFib(int value);
+    bool isNewPurchase;
 
 };
 

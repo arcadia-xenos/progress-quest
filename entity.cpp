@@ -27,6 +27,8 @@ Entity::Entity(QObject *parent) :
     Quantity.clear();
     Spells.clear();
     Armor.clear();
+
+    isNewPurchase = true;
 }
 
 int Entity::Encumbrance()
@@ -36,6 +38,18 @@ int Entity::Encumbrance()
         build += Inventory.at(i)->Weight * Quantity.at(i);
     }
     return build;
+}
+
+QString Entity::purchType()
+{
+    if (isNewPurchase)
+        return "new";
+    else
+        return "upgrade";
+}
+void Entity::setPurchNew(bool is_new)
+{
+    isNewPurchase = is_new;
 }
 
 unsigned long long int Entity::maxXP()
