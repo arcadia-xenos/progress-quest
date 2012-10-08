@@ -233,7 +233,7 @@ bool c_Monster::makeByLevel(int level)
 
         // random chance of special monster - incr with level
         chanceSpc = 10 - (level / 10);
-        if (chanceSpc < 2) chanceSpc = 1; // 100% at lv 90+
+        if (chanceSpc < 2) chanceSpc = 1; // 50% at lv 90+
         if (rand() % chanceSpc == 0) c_Monster::makeSpecial(level);
 
         // total range of mods for level displacement -20..+20

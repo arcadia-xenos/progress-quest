@@ -1,0 +1,29 @@
+  Progress Quest (ver7, c++/Qt version)
+  Martin Horner (xeno@morgoth.net) - Sep 2012
+
+  This software owes a great debt to Eric Fredricksen and his original
+  Progress Quest written in Delphi pascal also the subsequient javascript
+  version.
+
+  Progress Quest started (if I understand correctly) as a joke. A sort of
+  internet meme that went out of control. If I interpret the joke correctly
+  (and I certianly might not), Eric was pointing out that most MMORPG's
+  (RPG's?) are just time consumption. There were certinly other aspects to
+  the joke, but I think that was the main point.
+
+
+DOWNLOADING:
+
+Found at github:
+
+https://github.com/arcadia-xenos/progress-quest.git
+
+
+COMPILE INSTRUCTIONS:
+
+Requires Qt4 libraries, C++ with standard libs
+
+The github fetch will provide a complete project for Qt Creator.
+
+If you've never used Qt Creator, consider this an opportunity to make a new
+best friend.

@@ -26,3 +26,6 @@ HEADERS  += mainwindow.h \
     c_monster.h
 
 FORMS    += mainwindow.ui
+
+OTHER_FILES += \
+    README

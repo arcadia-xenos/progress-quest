@@ -62,7 +62,7 @@ public slots:
     
 private:
 
-    // random methods
+    // methods
     QString statRand(int basevalue, int offset);
     int fnFib(int value);
     bool isNewPurchase;
