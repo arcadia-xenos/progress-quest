@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../../../grumdrig-pq-55d918524976/crossed_swords_sm.gif</normaloff>../../../grumdrig-pq-55d918524976/crossed_swords_sm.gif</iconset>
+    <normaloff>crossed_swords_sm.gif</normaloff>crossed_swords_sm.gif</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">

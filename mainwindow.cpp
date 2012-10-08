@@ -537,8 +537,8 @@ void MainWindow::addMonDrop()
         }
     }
 
-    // add special
-    if (curMonster->isSpecial) {
+    // add special - 30% chance
+    if ((curMonster->isSpecial) && (rand() % 3 == 0)) {
         drop = new c_Item;
         drop->makeSpecial();
         if (rand() % 2 == 0) drop->addAdjMod();
