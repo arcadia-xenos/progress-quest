@@ -90,9 +90,9 @@ int c_Item::Appraisal()
         else                factor = 1;
 
         // factor by type (any = by grade only)
-        if      (itemType == pq_equip_weapon) factor += 2;
-        else if (itemType == pq_equip_shield) factor++;
-        else if (itemType == pq_equip_armor)  factor++;
+        if      (itemType == pq_equip_weapon) factor += 800;
+        else if (itemType == pq_equip_shield) factor += 600;
+        else if (itemType == pq_equip_armor)  factor += 700;
 
         // set price
         price = g * factor;
@@ -321,3 +321,86 @@ void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
 
 }
 
+//void c_Item::save(std::ofstream fh)
+//{
+//    //t_pq_equip itemType;
+//    fh << itemType << std::endl;
+
+//    //QString basename;
+//    //int     basegrade;
+//    fh << basename << std::endl;
+//    fh << basegrade << std::endl;
+
+//    /*
+//    QStringList modifiers;
+//    QList<bool> modprefix;
+//    QList<int>  modgrades;
+//    */
+//    fh << modifiers.size() << std::endl;
+//    for (int i=0; i < modifiers.size(); i++) {
+//        fh << modifiers.at(i) << std::endl;
+//    }
+//    fh << modprefix.size() << std::endl;
+//    for (int i=0; i < modprefix.size(); i++) {
+//        fh << modprefix.at(i) ? tr("true") : tr("false") << std::endl;
+//    }
+//    fh << modgrades.size() << std::endl;
+//    for (int i=0; i < modgrades.size(); i++) {
+//        fh << modgrades.at(i) << std::endl;
+//    }
+
+//    //int itemBonus;
+//    fh << itemBonus << std::endl;
+
+//    //int price;
+//    fh << price << std::endl;
+
+//    //int armorSlot;
+//    fh << armorSlot << std::endl;
+//}
+
+//void c_Item::load(std::ifstream fh)
+//{
+//    // locals to help load back values
+//    int arrSize;
+//    QString boolValue;
+
+//    //t_pq_equip itemType;
+//    fh >> itemType;
+
+//    //QString basename;
+//    //int     basegrade;
+//    fh >> basename;
+//    fh >> basegrade;
+
+//    /*
+//    QStringList modifiers;
+//    QList<bool> modprefix;
+//    QList<int>  modgrades;
+//    */
+//    fh >> arrSize;
+//    for (int i=0; i < arrSize; i++) {
+//        fh >> modifiers.at(i);
+//    }
+//    fh >> arrSize;
+//    for (int i=0; i < arrSize; i++) {
+//        fh >> boolValue;
+//        if (boolValue = tr("true"))
+//            modprefix.at(i) = true;
+//        else
+//            modprefix.at(i) = false;
+//    }
+//    fh >> arrSize;
+//    for (int i=0; i < arrSize; i++) {
+//        fh >> modgrades.at(i);
+//    }
+
+//    //int itemBonus;
+//    fh >> itemBonus;
+
+//    //int price;
+//    fh >> price;
+
+//    //int armorSlot;
+//    fh >> armorSlot;
+//}

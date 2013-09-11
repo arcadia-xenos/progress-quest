@@ -393,3 +393,81 @@ bool c_Monster::makeGroup(int level)
 
     return found;
 }
+
+//void c_Monster::save(std::ofstream fh)
+//{
+//    /*
+//    QString monster_race;
+//    int monster_level;
+//    */
+//    fh << monster_race << std::endl;
+//    fh << monster_level << std::endl;
+//    /*
+//    QStringList mods;
+//    QList<int> mod_values;
+//    */
+//    fh << mods.size() << std::endl;
+//    for (int i=0; i < mods.size(); i++) {
+//        fh << mods.at(i) << std::endl;
+//    }
+//    fh << mod_values.size() << std::endl;
+//    for (int i=0; i < mods_values.size(); i++) {
+//        fh << mods_values.at(i) << std::endl;
+//    }
+//    /*
+//    QStringList drops;
+//    bool dropsFormatted;
+//    */
+//    fh << drops.size() << std::endl;
+//    for (int i=0; i < drops.size(); i++) {
+//        fh << drops.at(i) << std::endl;
+//    }
+//    fh << dropsFormatted ? tr("true") : tr("false") << std::endl;
+//    /*
+//    QString discription;
+//    QString level;
+//    unsigned long long int awardXP;
+//    */
+//    fh << discription << std::endl;
+//    fh << level << std::endl;
+//    fh << awardXP << std::endl;
+//}
+
+//void c_Monster::load(std::ifstream fh)
+//{
+//    /*
+//    QString monster_race;
+//    int monster_level;
+//    */
+//    fh >>  monster_race;
+//    fh >> monster_level;
+//    /*
+//    QStringList mods;
+//    QList<int> mod_values;
+//    */
+//    fh >> mods.size();
+//    for (int i=0; i < mods.size(); i++) {
+//        fh >> mods.at(i);
+//    }
+//    fh >> mod_values.size();
+//    for (int i=0; i < mods_values.size(); i++) {
+//        fh >> mods_values.at(i);
+//    }
+//    /*
+//    QStringList drops;
+//    bool dropsFormatted;
+//    */
+//    fh >> drops.size();
+//    for (int i=0; i < drops.size(); i++) {
+//        fh >> drops.at(i);
+//    }
+//    fh >> dropsFormatted ? tr("true") : tr("false");
+//    /*
+//    QString discription;
+//    QString level;
+//    unsigned long long int awardXP;
+//    */
+//    fh >> discription;
+//    fh >> level;
+//    fh >> awardXP;
+//}

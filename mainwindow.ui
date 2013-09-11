@@ -336,6 +336,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="btn_save">
+         <property name="text">
+          <string>Save</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QTableWidget" name="tbl_traits">
          <property name="maximumSize">
           <size>

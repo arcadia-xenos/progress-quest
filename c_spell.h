@@ -3,6 +3,8 @@
 
 #include <QString>
 #include "pq7_config.h"
+#include <iostream>
+#include <fstream>
 
 class c_Spell
 {
@@ -20,6 +22,8 @@ public:
     void setRandName();
     void setSpellLevel(int level);
 
+//    void save(std::ofstream fh);
+//    void load(std::ifstream fh);
 
 private:
     int nameIndex, levelValue;

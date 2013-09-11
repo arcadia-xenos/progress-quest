@@ -16,14 +16,16 @@ SOURCES += main.cpp\
     pq7_config.cpp \
     c_spell.cpp \
     c_item.cpp \
-    c_monster.cpp
+    c_monster.cpp \
+    c_world.cpp
 
 HEADERS  += mainwindow.h \
     entity.h \
     pq7_config.h \
     c_spell.h \
     c_item.h \
-    c_monster.h
+    c_monster.h \
+    c_world.h
 
 FORMS    += mainwindow.ui
 

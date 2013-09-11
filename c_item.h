@@ -4,6 +4,8 @@
 #include <cmath>
 #include <QString>
 #include "pq7_config.h"
+#include <iostream>
+#include <fstream>
 
 class c_Item
 {
@@ -50,6 +52,8 @@ public:
     void makeClosestGrade(t_pq_equip iType, int grade);
 
     void clear();
+//    void save(std::ofstream fh);
+//    void load(std::ifstream fh);
 
 private:
     t_pq_equip itemType;

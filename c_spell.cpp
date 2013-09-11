@@ -3,8 +3,10 @@
 // default constr
 c_Spell::c_Spell()
 {
-    c_Spell::setNameIndex(0);
-    c_Spell::setSpellLevel(1);
+    //c_Spell::setNameIndex(0);
+    //c_Spell::setSpellLevel(1);
+    nameIndex = 0;
+    levelValue = 1;
 }
 
 // constr with name index
@@ -67,3 +69,15 @@ QString c_Spell::Level()
 {
     return gConfig->toRoman(levelValue);
 }
+
+//void c_Spell::save(std::ofstream fh)
+//{
+//    fh << nameIndex << std::endl;
+//    fh << levelValue << std::endl;
+//}
+
+//void c_Spell::load(std::ifstream fh)
+//{
+//    fh >> nameIndex;
+//    fh >> levelValue;
+//}

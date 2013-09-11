@@ -6,6 +6,7 @@
 #include <QString>
 #include <QList>
 #include "pq7_config.h"
+#include <iostream>
 
 class c_Monster : public QObject
 {
@@ -38,6 +39,8 @@ public:
     bool isSpecial;
 
     void clear();
+//    void save(std::ofstream fh);
+//    void load(std::ifstream fh);
 
 signals:
     

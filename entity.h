@@ -2,11 +2,14 @@
 #define ENTITY_H
 
 #include <cmath>
-#include <QObject>
-#include <QString>
 #include "c_spell.h"
 #include "c_item.h"
 #include "pq7_config.h"
+#include <iostream>
+#include <fstream>
+
+#include <QObject>
+#include <QString>
 
 class Entity : public QObject
 {
@@ -54,6 +57,9 @@ public:
     QString vocRand();
     void incrLevel();
 
+//    void save(std::ofstream fh);
+//    void load(std::ifstream fh);
+
 signals:
     void levelUp();
 
@@ -66,7 +72,6 @@ private:
     QString statRand(int basevalue, int offset);
     int fnFib(int value);
     bool isNewPurchase;
-
 };
 
 #endif // ENTITY_H

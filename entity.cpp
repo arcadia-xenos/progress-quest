@@ -151,3 +151,124 @@ void Entity::incrLevel()
     Level = QString().number(Level.toInt() + 1);
 }
 
+//void Entity::save(std::ofstream fh)
+//{
+
+//    /*
+//    QString Name, Race, Voc, Level;
+//    */
+//    fh << Name << std::endl;
+//    fh << Race << std::endl;
+//    fh << Voc << std::endl;
+//    fh << Level << std::endl;
+//    /*
+//    QString STR, INT, WIS, DEX, CON, CHA, HPMax, MPMax;
+//    */
+//    fh << STR << std::endl;
+//    fh << INT << std::endl;
+//    fh << WIS << std::endl;
+//    fh << DEX << std::endl;
+//    fh << CON << std::endl;
+//    fh << CHA << std::endl;
+//    fh << HPMax << std::endl;
+//    fh << MPMax << std::endl;
+//    /*
+//    QString XP;
+//    unsigned long long maxXP();
+//    */
+//    fh << XP << std::endl;
+//    fh << maxXP << std::endl;
+//    /*
+//    QList<c_Spell*> Spells;
+//    */
+//    fh << Spells.size() << std::endl;
+//    for (int i=0; i<Spells.size(); i++){
+//        fh << Spells.at(i)->save(fh);
+//    }
+//    /*
+//    c_Item*         Weapon;
+//    c_Item*         Sheild;
+//    QList<c_Item*>  Armor;
+//    */
+//    fh << Weapon->save(fh);
+//    fh << Sheild->save(fh);
+//    fh << Armor.size() << std::endl;
+//    for (int i=0; i < Armor.size(); i++) {
+//        fh << Armor.at(i)->save(fh);
+//    }
+//    /*
+//    QList<c_Item*> Inventory;
+//    QList<int> Quantity;
+//    */
+//    fh << Inventory.size() << std::endl;
+//    for (int i=0; i < Inventory.size(); i++) {
+//        fh << Inventory.at(i)->save(fh);
+//        fh << Quantity.at(i) << std::endl;
+//    }
+//    /*
+//    int Gold;
+//    */
+//    fh << Gold << std::endl;
+//}
+
+//void Entity::load(std::ifstream fh)
+//{
+//    // local helper values
+//    int arrSize;
+
+//    /*
+//    QString Name, Race, Voc, Level;
+//    */
+//    fh >> Name;
+//    fh >> Race;
+//    fh >> Voc;
+//    fh >> Level;
+//    /*
+//    QString STR, INT, WIS, DEX, CON, CHA, HPMax, MPMax;
+//    */
+//    fh >> STR;
+//    fh >> INT;
+//    fh >> WIS;
+//    fh >> DEX;
+//    fh >> CON;
+//    fh >> CHA;
+//    fh >> HPMax;
+//    fh >> MPMax;
+//    /*
+//    QString XP;
+//    unsigned long long maxXP();
+//    */
+//    fh >> XP;
+//    fh >> maxXP;
+//    /*
+//    QList<c_Spell*> Spells;
+//    */
+//    fh >> arrSize;
+//    for (int i=0; i < arrSize; i++){
+//        Spells.at(i)->load(fh);
+//    }
+//    /*
+//    c_Item*         Weapon;
+//    c_Item*         Sheild;
+//    QList<c_Item*>  Armor;
+//    */
+//    Weapon->load(fh);
+//    Sheild->load(fh);
+//    fh >> arrSize;
+//    for (int i=0; i < arrSize; i++) {
+//        Armor.at(i)->load(fh);
+//    }
+//    /*
+//    QList<c_Item*> Inventory;
+//    QList<int> Quantity;
+//    */
+//    fh >> arrSize;
+//    for (int i=0; i < arrSize; i++) {
+//        Inventory.at(i)->load(fh);
+//        fh >> Quantity.at(i);
+//    }
+//    /*
+//    int Gold;
+//    */
+//    fh >> Gold;
+//}
