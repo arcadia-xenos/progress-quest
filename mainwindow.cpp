@@ -29,7 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // connect the save button
-    connect(ui->btn_save, SIGNAL(released()), game, SLOT(game->save()));
+    //connect(ui->btn_save, SIGNAL(released()), game, SLOT(game->save()));
+    connect(ui->btn_save, SIGNAL(released()), this, SLOT(gameSave()));
 
     // set current plot act (before initFrames)
     game->Act = 0;
@@ -52,6 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    MainWindow::gameSave();
     delete ui;
 }
 
@@ -820,4 +822,19 @@ void MainWindow::updSpellTbl()
         ui->tbl_spells->setItem( i, 0, new QTableWidgetItem(game->Player->Spells.at(i)->Name()) );
         ui->tbl_spells->setItem( i, 1, new QTableWidgetItem(game->Player->Spells.at(i)->Level()) );
     }
+}
+
+void MainWindow::gameSave()
+{
+    pb_action_timer->stop();
+
+    game->pb_action = ui->pb_action->value();
+    game->pb_encumbrance = ui->pb_encumbrance->value();
+    game->pb_experience = ui->pb_experience->value();
+    game->pb_plot = ui->pb_plot->value();
+    game->pb_quest = ui->pb_quest->value();
+
+    game->save();
+
+    pb_action_timer->start();
 }

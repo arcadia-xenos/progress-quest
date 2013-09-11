@@ -22,7 +22,7 @@ public:
     void setRandName();
     void setSpellLevel(int level);
 
-//    void save(std::ofstream fh);
+    void save(std::ofstream &fh);
 //    void load(std::ifstream fh);
 
 private:

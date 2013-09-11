@@ -57,7 +57,7 @@ public:
     QString vocRand();
     void incrLevel();
 
-//    void save(std::ofstream fh);
+    void save(std::ofstream &fh);
 //    void load(std::ifstream fh);
 
 signals:

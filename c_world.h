@@ -65,7 +65,7 @@ signals:
 
 public slots:
     void save();
-    void load();
+    //void load();
 
 };
 

@@ -321,43 +321,49 @@ void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
 
 }
 
-//void c_Item::save(std::ofstream fh)
-//{
-//    //t_pq_equip itemType;
-//    fh << itemType << std::endl;
+void c_Item::save(std::ofstream &fh)
+{
+    //t_pq_equip itemType;
+    fh << (int)itemType << std::endl;
 
-//    //QString basename;
-//    //int     basegrade;
-//    fh << basename << std::endl;
-//    fh << basegrade << std::endl;
+    //QString basename;
+    //int     basegrade;
+    fh << basename.toStdString() << std::endl;
+    fh << basegrade << std::endl;
 
-//    /*
-//    QStringList modifiers;
-//    QList<bool> modprefix;
-//    QList<int>  modgrades;
-//    */
-//    fh << modifiers.size() << std::endl;
-//    for (int i=0; i < modifiers.size(); i++) {
-//        fh << modifiers.at(i) << std::endl;
-//    }
-//    fh << modprefix.size() << std::endl;
-//    for (int i=0; i < modprefix.size(); i++) {
-//        fh << modprefix.at(i) ? tr("true") : tr("false") << std::endl;
-//    }
-//    fh << modgrades.size() << std::endl;
-//    for (int i=0; i < modgrades.size(); i++) {
-//        fh << modgrades.at(i) << std::endl;
-//    }
+    /*
+    QStringList modifiers;
+    QList<bool> modprefix;
+    QList<int>  modgrades;
+    */
+    fh << modifiers.size() << std::endl;
+    for (int i=0; i < modifiers.size(); i++) {
+        //fh << modifiers.at(i).toStdString() << " ";
+        fh << modifiers.at(i).toStdString() << std::endl;
+    }
+    //fh << std::endl; // end of line
+    fh << modprefix.size() << std::endl;
+    for (int i=0; i < modprefix.size(); i++) {
+        if (modprefix.at(i))
+            fh << "true" << std::endl;
+        else
+            fh << "false" << std::endl;
+        //fh << modprefix.at(i) ? "true" : "false" << std::endl;
+    }
+    fh << modgrades.size() << std::endl;
+    for (int i=0; i < modgrades.size(); i++) {
+        fh << modgrades.at(i) << std::endl;
+    }
 
-//    //int itemBonus;
-//    fh << itemBonus << std::endl;
+    //int itemBonus;
+    fh << itemBonus << std::endl;
 
-//    //int price;
-//    fh << price << std::endl;
+    //int price;
+    fh << price << std::endl;
 
-//    //int armorSlot;
-//    fh << armorSlot << std::endl;
-//}
+    //int armorSlot;
+    fh << armorSlot << std::endl;
+}
 
 //void c_Item::load(std::ifstream fh)
 //{

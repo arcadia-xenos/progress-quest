@@ -70,11 +70,11 @@ QString c_Spell::Level()
     return gConfig->toRoman(levelValue);
 }
 
-//void c_Spell::save(std::ofstream fh)
-//{
-//    fh << nameIndex << std::endl;
-//    fh << levelValue << std::endl;
-//}
+void c_Spell::save(std::ofstream &fh)
+{
+    fh << nameIndex << std::endl;
+    fh << levelValue << std::endl;
+}
 
 //void c_Spell::load(std::ifstream fh)
 //{

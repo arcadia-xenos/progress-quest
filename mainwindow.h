@@ -70,6 +70,8 @@ public slots:
     void incr_pb_plot_value();
     void incr_pb_quest_value();
 
+    void gameSave();
+
     void setAction();
 };
 

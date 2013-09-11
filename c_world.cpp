@@ -156,10 +156,10 @@ void c_World::save()
     if (fh_saveFile.is_open()) {
 
         //Entity* Player;
-        //Player->save(fh_saveFile);
+        Player->save(fh_saveFile);
 
         //c_Monster* Monster;
-        //Monster->save(fh_saveFile);
+        Monster->save(fh_saveFile);
 
         /*
         int Act;
@@ -189,44 +189,45 @@ void c_World::save()
     }
     fh_saveFile.close();
 }
-void c_World::load()
-{
-    std::ifstream fh_saveFile;
-    fh_saveFile.open("pq_savefile_test");
 
-    if (fh_saveFile.is_open()) {
+//void c_World::load()
+//{
+//    std::ifstream fh_saveFile;
+//    fh_saveFile.open("pq_savefile_test");
 
-        //Entity* Player;
-        //Player->load(fh_saveFile);
+//    if (fh_saveFile.is_open()) {
 
-        //c_Monster* Monster;
-        //Monster->load(fh_saveFile);
+//        //Entity* Player;
+//        //Player->load(fh_saveFile);
 
-        /*
-        int Act;
-        QString Action;
-        t_pq_state State;
-        */
-        fh_saveFile >> Act;
-        //fh_saveFile >> Action;
-        //fh_saveFile >> State;
+//        //c_Monster* Monster;
+//        //Monster->load(fh_saveFile);
 
-        /*
-        int pb_action;
-        int pb_experience;
-        int pb_encumbrance;
-        int pb_plot;
-        int pb_quest;
-        */
-        fh_saveFile >> pb_action;
-        fh_saveFile >> pb_experience;
-        fh_saveFile >> pb_encumbrance;
-        fh_saveFile >> pb_plot;
-        fh_saveFile >> pb_quest;
-    }
-    else
-    {
-        // file failed to open... wtf
-    }
-    fh_saveFile.close();
-}
+//        /*
+//        int Act;
+//        QString Action;
+//        t_pq_state State;
+//        */
+//        fh_saveFile >> Act;
+//        //fh_saveFile >> Action;
+//        //fh_saveFile >> State;
+
+//        /*
+//        int pb_action;
+//        int pb_experience;
+//        int pb_encumbrance;
+//        int pb_plot;
+//        int pb_quest;
+//        */
+//        fh_saveFile >> pb_action;
+//        fh_saveFile >> pb_experience;
+//        fh_saveFile >> pb_encumbrance;
+//        fh_saveFile >> pb_plot;
+//        fh_saveFile >> pb_quest;
+//    }
+//    else
+//    {
+//        // file failed to open... wtf
+//    }
+//    fh_saveFile.close();
+//}
