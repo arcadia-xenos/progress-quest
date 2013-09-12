@@ -17,7 +17,9 @@ SOURCES += main.cpp\
     c_spell.cpp \
     c_item.cpp \
     c_monster.cpp \
-    c_world.cpp
+    c_world.cpp \
+    dialog_opening.cpp \
+    dialog_charsheet.cpp
 
 HEADERS  += mainwindow.h \
     entity.h \
@@ -25,9 +27,13 @@ HEADERS  += mainwindow.h \
     c_spell.h \
     c_item.h \
     c_monster.h \
-    c_world.h
+    c_world.h \
+    dialog_opening.h \
+    dialog_charsheet.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dialog_opening.ui \
+    dialog_charsheet.ui
 
 OTHER_FILES += \
     README

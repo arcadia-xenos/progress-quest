@@ -209,8 +209,8 @@ void c_World::save()
 //        t_pq_state State;
 //        */
 //        fh_saveFile >> Act;
-//        //fh_saveFile >> Action;
-//        //fh_saveFile >> State;
+//        fh_saveFile >> Action;
+//        fh_saveFile >> State;
 
 //        /*
 //        int pb_action;

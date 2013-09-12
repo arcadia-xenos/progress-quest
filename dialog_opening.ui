@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog_Opening</class>
+ <widget class="QDialog" name="Dialog_Opening">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>320</width>
+    <height>210</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Progress Quest 7</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../../../../home/martin/proj/pq/progress-quest/crossed_swords_sm.gif</normaloff>../../../../../../home/martin/proj/pq/progress-quest/crossed_swords_sm.gif</iconset>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <widget class="QGroupBox" name="gbx_startOptions">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>301</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Select Start Option</string>
+   </property>
+   <widget class="QPushButton" name="btn_load">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>30</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string extracomment="Load previously saved file from filesystem"/>
+    </property>
+    <property name="text">
+     <string>Load Existing Save</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_createNew">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>70</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string extracomment="Specify the stats of a new starting character"/>
+    </property>
+    <property name="text">
+     <string>Create New</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_random">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>110</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string extracomment="Create new random character"/>
+    </property>
+    <property name="text">
+     <string>Random </string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
