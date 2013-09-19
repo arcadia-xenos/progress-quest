@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <jsoncpp/json/json.h>
+
 class c_Item
 {
 public:
@@ -53,7 +55,7 @@ public:
     void makeClosestGrade(t_pq_equip iType, int grade);
 
     void clear();
-    void save(std::ofstream &fh);
+    Json::Value save();
 //    void load(std::ifstream fh);
 
 private:

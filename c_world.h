@@ -11,6 +11,8 @@
 
 #include <QObject>
 
+#include <jsoncpp/json/json.h>
+
 typedef enum {
     pq_state_reserved_1,
     pq_state_heading_to_killing_fields,
@@ -65,7 +67,7 @@ signals:
 
 public slots:
     void save();
-    //void load();
+//    void load();
 
 };
 

@@ -9,6 +9,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <jsoncpp/json/json.h>
+
 class c_Monster : public QObject
 {
     Q_OBJECT
@@ -40,7 +42,7 @@ public:
     bool isSpecial;
 
     void clear();
-    void save(std::ofstream &fh);
+    Json::Value save();
 //    void load(std::ifstream fh);
 
 signals:

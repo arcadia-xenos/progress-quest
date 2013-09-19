@@ -14,6 +14,7 @@ c_World::c_World(QObject *parent) :
     pb_plot = 0;
     pb_quest = 0;
     //c_World::initPlayer();
+    jsonRoot.clear();
 }
 
 void c_World::initPlayer()
@@ -150,25 +151,22 @@ c_Item* c_World::makeEqByGrade(t_pq_equip eqtype, int grade)
 
 void c_World::save()
 {
+
     std::ofstream fh_saveFile;
-    fh_saveFile.open("pq_savefile_test",std::ios::trunc);
+    fh_saveFile.open("pq_savefile_test.pqd",std::ios::trunc);
 
     if (fh_saveFile.is_open()) {
-
-        //Entity* Player;
-        Player->save(fh_saveFile);
-
-        //c_Monster* Monster;
-        Monster->save(fh_saveFile);
-
         /*
         int Act;
         QString Action;
         t_pq_state State;
         */
-        fh_saveFile << Act << std::endl;
-        fh_saveFile << Action.toStdString() << std::endl;
-        fh_saveFile << (int)State << std::endl;
+        jsonRoot["World"]["Act"] = Act;
+        jsonRoot["World"]["Action"] = Action.toStdString();
+        jsonRoot["World"]["State"] = (int)State;
+//        fh_saveFile << Act << std::endl;
+//        fh_saveFile << Action.toStdString() << std::endl;
+//        fh_saveFile << (int)State << std::endl;
 
         /*
         int pb_action;
@@ -177,16 +175,29 @@ void c_World::save()
         int pb_plot;
         int pb_quest;
         */
-        fh_saveFile << pb_action << std::endl;
-        fh_saveFile << pb_experience << std::endl;
-        fh_saveFile << pb_encumbrance << std::endl;
-        fh_saveFile << pb_plot << std::endl;
-        fh_saveFile << pb_quest << std::endl;
+        jsonRoot["World"]["pb_action"] = pb_action;
+        jsonRoot["World"]["pb_experience"] = pb_experience;
+        jsonRoot["World"]["pb_encumbrance"] = pb_encumbrance;
+        jsonRoot["World"]["pb_plot"] = pb_plot;
+        jsonRoot["World"]["pb_quest"] = pb_quest;
+//        fh_saveFile << pb_action << std::endl;
+//        fh_saveFile << pb_experience << std::endl;
+//        fh_saveFile << pb_encumbrance << std::endl;
+//        fh_saveFile << pb_plot << std::endl;
+//        fh_saveFile << pb_quest << std::endl;
+
+        //Entity* Player;
+        jsonRoot["World"]["Player"] = Player->save();
+
+        //c_Monster* Monster;
+        jsonRoot["World"]["Monster"] = Monster->save();
+
     }
     else
     {
         // file failed to open... wtf
     }
+    fh_saveFile << jsonRoot << std::endl;
     fh_saveFile.close();
 }
 
@@ -208,9 +219,9 @@ void c_World::save()
 //        QString Action;
 //        t_pq_state State;
 //        */
-//        fh_saveFile >> Act;
-//        fh_saveFile >> Action;
-//        fh_saveFile >> State;
+////        fh_saveFile >> Act;
+////        fh_saveFile >> Action;
+////        fh_saveFile >> State;
 
 //        /*
 //        int pb_action;
@@ -219,11 +230,11 @@ void c_World::save()
 //        int pb_plot;
 //        int pb_quest;
 //        */
-//        fh_saveFile >> pb_action;
-//        fh_saveFile >> pb_experience;
-//        fh_saveFile >> pb_encumbrance;
-//        fh_saveFile >> pb_plot;
-//        fh_saveFile >> pb_quest;
+////        fh_saveFile >> pb_action;
+////        fh_saveFile >> pb_experience;
+////        fh_saveFile >> pb_encumbrance;
+////        fh_saveFile >> pb_plot;
+////        fh_saveFile >> pb_quest;
 //    }
 //    else
 //    {

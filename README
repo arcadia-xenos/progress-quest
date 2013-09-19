@@ -19,11 +19,25 @@ Found at github:
 https://github.com/arcadia-xenos/progress-quest.git
 
 
-COMPILE INSTRUCTIONS:
+COMPILE HINTS:
 
-Requires Qt4 libraries, C++ with standard libs
+Requires Qt4 libraries (4.8.1ish), jsoncpp libraries,  C++ with standard libs
+    QT Creator (QT's IDE and form creation environment) is a plus.
+
+jsoncpp can be found at http://sourceforge.net/projects/jsoncpp/files/
+    or svn'd from http://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/
 
 The github fetch will provide a complete project for Qt Creator.
 
 If you've never used Qt Creator, consider this an opportunity to make a new
 best friend.
+
+
+Notes:
+
+    Yes, I am considering a package set once pq7 is released (at time of writing
+    we are in beta10)
+
+    No, once pq7 is completed, I'm moving immediately to pq8 which is a much more
+    extensive vision of pq than a remake of 6. I will not be refineing pq7 after
+    release. That will be left to community.

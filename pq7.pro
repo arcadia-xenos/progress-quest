@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+LIBS += -ljsoncpp
+
 QT       += core gui
 
 TARGET = pq7
@@ -37,3 +39,4 @@ FORMS    += mainwindow.ui \
 
 OTHER_FILES += \
     README
+

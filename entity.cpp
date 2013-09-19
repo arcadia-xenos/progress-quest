@@ -151,62 +151,74 @@ void Entity::incrLevel()
     Level = QString().number(Level.toInt() + 1);
 }
 
-void Entity::save(std::ofstream &fh)
+Json::Value Entity::save()
 {
-
+    Json::Value root;
+    std::string mKey = "Entity";
     /*
     QString Name, Race, Voc, Level;
     */
-    fh << Name.toStdString() << std::endl;
-    fh << Race.toStdString() << std::endl;
-    fh << Voc.toStdString() << std::endl;
-    fh << Level.toStdString() << std::endl;
+    root[mKey]["Name"] = Name.toStdString();
+    root[mKey]["Race"] = Race.toStdString();
+    root[mKey]["Class"] = Voc.toStdString();
+    root[mKey]["Level"] = Level.toStdString();
     /*
     QString STR, INT, WIS, DEX, CON, CHA, HPMax, MPMax;
     */
-    fh << STR.toStdString() << std::endl;
-    fh << INT.toStdString() << std::endl;
-    fh << WIS.toStdString() << std::endl;
-    fh << DEX.toStdString() << std::endl;
-    fh << CON.toStdString() << std::endl;
-    fh << CHA.toStdString() << std::endl;
-    fh << HPMax.toStdString() << std::endl;
-    fh << MPMax.toStdString() << std::endl;
+    root[mKey]["STR"] = STR.toStdString();
+    root[mKey]["INT"] = INT.toStdString();
+    root[mKey]["WIS"] = WIS.toStdString();
+    root[mKey]["DEX"] = DEX.toStdString();
+    root[mKey]["CON"] = CON.toStdString();
+    root[mKey]["CHA"] = CHA.toStdString();
+    root[mKey]["HPMax"] = HPMax.toStdString();
+    root[mKey]["MPMax"] = MPMax.toStdString();
     /*
     QString XP;
     */
-    fh << XP.toStdString() << std::endl;
+    root[mKey]["XP"] = XP.toStdString();
     /*
     QList<c_Spell*> Spells;
     */
-    fh << Spells.size() << std::endl;
     for (int i=0; i<Spells.size(); i++){
-        Spells.at(i)->save(fh);
+        QString key = QString::fromStdString("Spell-") + QString::number(i);
+        root[mKey][key.toStdString()] = Spells.at(i)->save();
     }
     /*
     c_Item*         Weapon;
     c_Item*         Sheild;
     QList<c_Item*>  Armor;
     */
-    Weapon->save(fh);
-    Sheild->save(fh);
-    fh << Armor.size() << std::endl;
+    root[mKey]["Weapon"] = Weapon->save();
+    root[mKey]["Sheild"] = Sheild->save();
+//    Weapon->save(jsonRoot);
+//    Sheild->save(jsonRoot);
+//    jsonRoot << Armor.size() << std::endl;
     for (int i=0; i < Armor.size(); i++) {
-        Armor.at(i)->save(fh);
+        //        Armor.at(i)->save(jsonRoot);
+        QString catstr = QString::fromStdString("Armor-") + QString::number(i);
+        std::string aKey = catstr.toStdString();
+        root[mKey][aKey] = Armor.at(i)->save();
     }
     /*
     QList<c_Item*> Inventory;
     QList<int> Quantity;
     */
-    fh << Inventory.size() << std::endl;
+//    jsonRoot << Inventory.size() << std::endl;
     for (int i=0; i < Inventory.size(); i++) {
-        Inventory.at(i)->save(fh);
-        fh << Quantity.at(i) << std::endl;
+//        Inventory.at(i)->save(jsonRoot);
+//        jsonRoot << Quantity.at(i) << std::endl;
+        QString catstr = QString::fromStdString("Inv-") + QString::number(i);
+        std::string iKey = catstr.toStdString();
+        root[mKey][iKey]["InvItem"] = Inventory.at(i)->save();
+        root[mKey][iKey]["Quantity"] = Quantity.at(i);
     }
     /*
     int Gold;
     */
-    fh << Gold << std::endl;
+    root[mKey]["Gold"] = Gold;
+
+    return root;
 }
 
 //void Entity::load(std::ifstream fh)

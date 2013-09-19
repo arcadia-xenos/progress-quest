@@ -70,10 +70,12 @@ QString c_Spell::Level()
     return gConfig->toRoman(levelValue);
 }
 
-void c_Spell::save(std::ofstream &fh)
+Json::Value c_Spell::save()
 {
-    fh << nameIndex << std::endl;
-    fh << levelValue << std::endl;
+    Json::Value root;
+    root["Spell"]["NameIndex"] = nameIndex;
+    root["Spell"]["Level"] = levelValue;
+    return root;
 }
 
 //void c_Spell::load(std::ifstream fh)

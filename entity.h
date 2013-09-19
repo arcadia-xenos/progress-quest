@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QString>
 
+#include <jsoncpp/json/json.h>
+
 class Entity : public QObject
 {
     Q_OBJECT
@@ -57,7 +59,7 @@ public:
     QString vocRand();
     void incrLevel();
 
-    void save(std::ofstream &fh);
+    Json::Value save();
 //    void load(std::ifstream fh);
 
 signals:

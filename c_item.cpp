@@ -321,48 +321,63 @@ void c_Item::makeClosestGrade(t_pq_equip iType, int grade)
 
 }
 
-void c_Item::save(std::ofstream &fh)
+Json::Value c_Item::save()
 {
+    Json::Value root;
+    std::string mKey = "Item";
+
     //t_pq_equip itemType;
-    fh << (int)itemType << std::endl;
+    //fh << (int)itemType << std::endl;
+    root[mKey]["Type"] = (int)itemType;
 
     //QString basename;
     //int     basegrade;
-    fh << basename.toStdString() << std::endl;
-    fh << basegrade << std::endl;
+    //fh << basename.toStdString() << std::endl;
+    //fh << basegrade << std::endl;
+    root[mKey]["Name"] = basename.toStdString();
+    root[mKey]["BaseGrade"] = basegrade;
 
     /*
     QStringList modifiers;
     QList<bool> modprefix;
     QList<int>  modgrades;
     */
-    fh << modifiers.size() << std::endl;
+    //fh << modifiers.size() << std::endl;
     for (int i=0; i < modifiers.size(); i++) {
         //fh << modifiers.at(i).toStdString() << " ";
-        fh << modifiers.at(i).toStdString() << std::endl;
+        //fh << modifiers.at(i).toStdString() << std::endl;
+        QString modkey = QString::fromStdString("Mod-") + QString::number(i);
+        root[mKey][modkey.toStdString()]["Modifier"] = modifiers.at(i).toStdString();
+        root[mKey][modkey.toStdString()]["ModPrefix"] = modprefix.at(i);
+        root[mKey][modkey.toStdString()]["ModGrade"] = modgrades.at(i);
     }
-    //fh << std::endl; // end of line
-    fh << modprefix.size() << std::endl;
-    for (int i=0; i < modprefix.size(); i++) {
-        if (modprefix.at(i))
-            fh << "true" << std::endl;
-        else
-            fh << "false" << std::endl;
-        //fh << modprefix.at(i) ? "true" : "false" << std::endl;
-    }
-    fh << modgrades.size() << std::endl;
-    for (int i=0; i < modgrades.size(); i++) {
-        fh << modgrades.at(i) << std::endl;
-    }
+//    //fh << std::endl; // end of line
+//    fh << modprefix.size() << std::endl;
+//    for (int i=0; i < modprefix.size(); i++) {
+//        if (modprefix.at(i))
+//            fh << "true" << std::endl;
+//        else
+//            fh << "false" << std::endl;
+//        //fh << modprefix.at(i) ? "true" : "false" << std::endl;
+//    }
+//    fh << modgrades.size() << std::endl;
+//    for (int i=0; i < modgrades.size(); i++) {
+//        fh << modgrades.at(i) << std::endl;
+//    }
 
     //int itemBonus;
-    fh << itemBonus << std::endl;
+//    fh << itemBonus << std::endl;
+    root[mKey]["Bonus"] = itemBonus;
 
     //int price;
-    fh << price << std::endl;
+//    fh << price << std::endl;
+    root[mKey]["Price"] = price;
 
     //int armorSlot;
-    fh << armorSlot << std::endl;
+//    fh << armorSlot << std::endl;
+    root[mKey]["ArmorSlot"] = armorSlot;
+
+    return root;
 }
 
 //void c_Item::load(std::ifstream fh)

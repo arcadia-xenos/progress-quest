@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <jsoncpp/json/json.h>
+
 class c_Spell
 {
 public:
@@ -22,7 +24,7 @@ public:
     void setRandName();
     void setSpellLevel(int level);
 
-    void save(std::ofstream &fh);
+    Json::Value save();
 //    void load(std::ifstream fh);
 
 private:

@@ -394,47 +394,64 @@ bool c_Monster::makeGroup(int level)
     return found;
 }
 
-void c_Monster::save(std::ofstream &fh)
+Json::Value c_Monster::save()
 {
+    Json::Value root;
+    std::string mKey = "Monster";
     /*
     QString monster_race;
     int monster_level;
     */
-    fh << monster_race.toStdString() << std::endl;
-    fh << monster_level << std::endl;
+//    fh << monster_race.toStdString() << std::endl;
+//    fh << monster_level << std::endl;
+    root[mKey]["Race"] = monster_race.toStdString();
+    root[mKey]["Level"] = monster_level;
     /*
     QStringList mods;
     QList<int> mod_values;
     */
-    fh << mods.size() << std::endl;
+//    fh << mods.size() << std::endl;
     for (int i=0; i < mods.size(); i++) {
-        fh << mods.at(i).toStdString() << std::endl;
+//        fh << mods.at(i).toStdString() << std::endl;
+        QString catstr = QString::fromStdString("Mod-") + QString::number(i);
+        std::string modkey = catstr.toStdString();
+        root[mKey][modkey]["Modifier"] = mods.at(i).toStdString();
+        root[mKey][modkey]["Value"] = mod_values.at(i);
     }
-    fh << mod_values.size() << std::endl;
-    for (int i=0; i < mod_values.size(); i++) {
-        fh << mod_values.at(i) << std::endl;
-    }
+//    fh << mod_values.size() << std::endl;
+//    for (int i=0; i < mod_values.size(); i++) {
+//        fh << mod_values.at(i) << std::endl;
+//    }
     /*
     QStringList drops;
     bool dropsFormatted;
     */
-    fh << drops.size() << std::endl;
+    //fh << drops.size() << std::endl;
     for (int i=0; i < drops.size(); i++) {
-        fh << drops.at(i).toStdString() << std::endl;
+        QString catstr = QString::fromStdString("Drop-") + QString::number(i);
+        std::string dropkey = catstr.toStdString();
+        //fh << drops.at(i).toStdString() << std::endl;
+        root[mKey][dropkey]["Drop"] = drops.at(i).toStdString();
     }
-    if (dropsFormatted)
-        fh << "true" << std::endl;
-    else
-        fh << "false" << std::endl;
+//    if (dropsFormatted)
+//        fh << "true" << std::endl;
+//    else
+//        fh << "false" << std::endl;
     //fh << dropsFormatted ? tr("true") : tr("false") << std::endl;
+    root[mKey]["DropsFormatted"] = dropsFormatted;
     /*
     QString discription;
     QString level;
     unsigned long long int awardXP;
     */
-    fh << discription.toStdString() << std::endl;
-    fh << level.toStdString() << std::endl;
-    fh << awardXP << std::endl;
+//    fh << discription.toStdString() << std::endl;
+//    fh << level.toStdString() << std::endl;
+//    fh << awardXP << std::endl;
+    root[mKey]["Discripttion"] = discription.toStdString();
+    root[mKey]["Level"] = level.toStdString();
+    root[mKey]["AwardXP"] = awardXP;
+
+    return root;
 }
 
 //void c_Monster::load(std::ifstream fh)
