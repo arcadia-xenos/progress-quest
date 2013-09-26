@@ -10,6 +10,7 @@
 #include <fstream>
 
 #include <QObject>
+#include <QMessageBox>
 
 #include <jsoncpp/json/json.h>
 
@@ -55,6 +56,21 @@ public:
     int pb_quest;
 
     /*
+     *      Quest history
+     */
+    QStringList quests;
+
+    /*
+     *      Timer Interval
+     */
+    int actionTime;
+
+    /*
+     *      Flag for Post Load UI Processing
+     */
+    bool isLoaded;
+
+    /*
      *    Public Methods
      */
     c_Item* makeEqByGrade(t_pq_equip eqtype , int grade);
@@ -63,12 +79,20 @@ public:
 
 private:
 
+    // save / load helpers
+    Json::Value listToArray(QStringList &list);
+    QStringList arrayToList(Json::Value array);
+
 signals:
 
 public slots:
     void save();
-//    void load();
-
+    void save(QString filename);
+    void load();
+    void load(QString filename);
+    void load(Json::Value root);
 };
 
 #endif // C_WORLD_H
+
+extern c_World* game;

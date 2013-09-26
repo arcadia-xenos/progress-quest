@@ -28,7 +28,8 @@ public:
 
     // experience
     QString XP;
-    unsigned long long maxXP();
+    qulonglong maxXP();
+
 
 
     // spells
@@ -60,7 +61,7 @@ public:
     void incrLevel();
 
     Json::Value save();
-//    void load(std::ifstream fh);
+    void load(Json::Value entityRoot);
 
 signals:
     void levelUp();
@@ -70,10 +71,20 @@ public slots:
     
 private:
 
+    bool isNewPurchase;
+
     // methods
     QString statRand(int basevalue, int offset);
     int fnFib(int value);
-    bool isNewPurchase;
+
+    // save / load helper
+    Json::Value spellListToArray(QList<c_Spell *> &list);
+    Json::Value itemListToArray(QList<c_Item *> &list);
+    Json::Value invListToArray(QList<c_Item *> &iList, QList<int> &nList);
+
+    QList<c_Spell *> arrayToSpellList(Json::Value array);
+    QList<c_Item *> arrayToItemList(Json::Value array);
+    void arrayToInvList(Json::Value array, QList<c_Item *> &iList, QList<int> &nList);
 };
 
 #endif // ENTITY_H

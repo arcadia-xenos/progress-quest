@@ -327,9 +327,9 @@ int c_Config::fnPercentOf(int value, int of) {
         return (int)( ((float)value / (float)of) * 100.0 ) ;
 }
 
-unsigned long long int c_Config::fnPercentOf(unsigned long long int value, unsigned long long int of)
+qulonglong c_Config::fnPercentOf(qulonglong value, qulonglong of)
 {
-    return (unsigned long long int)( ((double)value / (double)of) * 100.0 );
+    return (qulonglong)( ((double)value / (double)of) * 100.0 );
 }
 
 

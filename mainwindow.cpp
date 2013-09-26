@@ -1,9 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QTimer>
-
-
 // global super classes
 c_Config* gConfig;
 c_World* game;
@@ -20,17 +17,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // new main classes
     game = new c_World;
-    //Player = new Entity;
     gConfig = new c_Config;
-
-    //curMonster = new c_Monster;
 
     // setup / show ui
     ui->setupUi(this);
 
-    // connect the save button
-    //connect(ui->btn_save, SIGNAL(released()), game, SLOT(game->save()));
-    connect(ui->btn_save, SIGNAL(released()), this, SLOT(gameSave()));
+    // connect the save / load buttons (debugging)
+    //connect(ui->btn_save, SIGNAL(released()), this, SLOT(gameSave()));
+    //connect(ui->btn_load, SIGNAL(released()), this, SLOT(gameLoad()));
 
     // set current plot act (before initFrames)
     game->Act = 0;
@@ -46,6 +40,14 @@ MainWindow::MainWindow(QWidget *parent) :
     else
         game->State = pq_state_buying_new_equip;
 
+    // startup dialog
+    Dialog_Opening startup;
+    startup.exec();
+
+    // if game was loaded then update ui throughly
+    if (game->isLoaded)
+        MainWindow::postLoadUpdates();
+
     // start actions
     MainWindow::setAction();
     pb_action_timer->start();
@@ -53,7 +55,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    MainWindow::gameSave();
+    //MainWindow::gameSave();
+    pb_action_timer->stop();
+    game->save(game->Player->Name + QString::fromStdString(".pqd"));
+
+    // cut - that's lunch.
     delete ui;
 }
 
@@ -91,6 +97,7 @@ void MainWindow::incr_pb_action_value()
 
         MainWindow::tranState();
     }
+    game->pb_action = ui->pb_action->value();
 }
 
 void MainWindow::incr_pb_encumbrance_value()
@@ -100,6 +107,8 @@ void MainWindow::incr_pb_encumbrance_value()
 
     // set value to bar
     ui->pb_encumbrance->setValue(value);
+
+    game->pb_encumbrance = ui->pb_encumbrance->value();
 }
 
 void MainWindow::incr_pb_plot_value()
@@ -134,6 +143,7 @@ void MainWindow::incr_pb_plot_value()
         MainWindow::addAct();
 
     }
+    game->pb_plot = ui->pb_plot->value();
 }
 
 void MainWindow::incr_pb_quest_value()
@@ -157,9 +167,11 @@ void MainWindow::incr_pb_quest_value()
         ui->lst_quests->currentItem()->setCheckState(Qt::Checked);
 
         //      add new and progress plot
-        MainWindow::addQuest(MainWindow::randQuest());
+        game->quests.push_back(MainWindow::randQuest());
+        MainWindow::addQuest(game->quests.at(game->quests.size() - 1));
         MainWindow::incr_pb_plot_value();
     }
+    game->pb_quest = ui->pb_quest->value();
 }
 
 void MainWindow::incr_pb_experience_value()
@@ -182,7 +194,6 @@ void MainWindow::incr_pb_experience_value()
         else
         {
             // level up
-
             //      incr level
             game->Player->incrLevel();
             ui->tbl_traits->setCurrentCell(3,1);
@@ -190,7 +201,7 @@ void MainWindow::incr_pb_experience_value()
 
             //      reset progress bar
             value = (value % ui->pb_experience->maximum());
-            ui->pb_experience->setValue((int)(gConfig->fnPercentOf((unsigned long long int)value,game->Player->maxXP())));
+            ui->pb_experience->setValue((int)(gConfig->fnPercentOf((qulonglong)value,game->Player->maxXP())));
 
 
             // win better stats
@@ -201,6 +212,7 @@ void MainWindow::incr_pb_experience_value()
 
         }
     }
+    game->pb_experience = ui->pb_experience->value();
 }
 
 void MainWindow::initFrames()
@@ -235,8 +247,9 @@ void MainWindow::initFrames()
     // list inventory
     MainWindow::updInvTbl();
 
-    // list initial plotline
+    // list plotline values
     if (game->Act == 0) {
+        //do two to succeed prologue
         MainWindow::addAct();
         ui->lst_plot->currentItem()->setCheckState(Qt::Checked);
         game->Act++;
@@ -244,11 +257,19 @@ void MainWindow::initFrames()
     }
     else
     {
+        /*
+            If loaded with value higher from old save
+            this will just start the list from last Act.
+            This effectively cleans the act list over time
+            unless the user never shutsdown / saves and
+            reloads.
+        */
         MainWindow::addAct();
     }
 
-    // list initial quest
-    MainWindow::addQuest(MainWindow::randQuest());
+    // quests update
+    MainWindow::updQuestList();
+
 }
 
 QString MainWindow::randQuest()
@@ -329,6 +350,10 @@ QString MainWindow::randQuest()
 
 void MainWindow::addQuest(QString name)
 {
+    // add to world object
+    //game->quests.push_back(name);
+
+    // add to quests listbox
     ui->lst_quests->addItem(new QListWidgetItem ());
     ui->lst_quests->setCurrentRow(ui->lst_quests->count() - 1);
     ui->lst_quests->currentItem()->setText(name);
@@ -364,24 +389,25 @@ void MainWindow::setAction()
     case pq_state_heading_to_killing_fields:
         // heading to killing feilds
         game->Action = tr("Heading to the Killing Feilds");
-        pb_action_timer->setInterval(75);
+        //pb_action_timer->setInterval(75);
+        game->actionTime = 75;
         break;;
     case pq_state_fight:
         // fight
         MainWindow::setMonster();
         game->Action = tr("Executing ") +\
                 gConfig->Indefinite(game->Monster->Discription());
-        pb_action_timer->setInterval(50);
+        game->actionTime = 50;
         break;;
     case pq_state_heading_to_town:
         // back to Town
         game->Action = tr("Going back to Town to sell off");
-        pb_action_timer->setInterval(75);
+        game->actionTime = 75;
         break;;
     case pq_state_selling_off:
         // selling off
         game->Action = tr("Selling ") + MainWindow::sellInvItem();
-        pb_action_timer->setInterval(20);
+        game->actionTime = 20;
         break;;
     case pq_state_buying_new_equip:
         // shopping!!
@@ -397,13 +423,16 @@ void MainWindow::setAction()
             game->Action += tr("(armor)"); break;;
         case pq_equip_any: break;;
         }
-        pb_action_timer->setInterval(35);
+        game->actionTime = 35;
         break;;
     default:
         game->Action = tr("You are lost in another plane of existance");
-        pb_action_timer->setInterval(1000);
+        game->actionTime = 1000;
     }
+
+    // update final conditions
     ui->lbl_action->setText(game->Action);
+    pb_action_timer->setInterval(game->actionTime);
 }
 
 void MainWindow::tranState()
@@ -754,16 +783,16 @@ void MainWindow::updInvTbl()
 
     // gold first
     ui->tbl_inventory->setItem(0, 0, new QTableWidgetItem("Gold") );
-    ui->tbl_inventory->setItem(0, 1, new QTableWidgetItem(QString().number(game->Player->Gold)) );
+    ui->tbl_inventory->setItem(0, 1, new QTableWidgetItem(QString::number(game->Player->Gold)) );
 
     // remaining inv list
     for (int i(0); i < game->Player->Inventory.size(); i++) {
         ui->tbl_inventory->setItem(i+1, 0, new QTableWidgetItem(game->Player->Inventory.at(i)->Name()) );
-        ui->tbl_inventory->setItem(i+1, 1, new QTableWidgetItem(QString().number(game->Player->Quantity.at(i))) );
+        ui->tbl_inventory->setItem(i+1, 1, new QTableWidgetItem(QString::number(game->Player->Quantity.at(i))) );
     }
 
     ui->lbl_inventory->setText( tr("Inventory ") +\
-                                QString().number(game->Player->Encumbrance()) +\
+                                QString::number(game->Player->Encumbrance()) +\
                                 tr(" units") );
 }
 
@@ -826,15 +855,89 @@ void MainWindow::updSpellTbl()
 
 void MainWindow::gameSave()
 {
-    pb_action_timer->stop();
+    /*
+     *      Send world info to file
+     */
 
-    game->pb_action = ui->pb_action->value();
-    game->pb_encumbrance = ui->pb_encumbrance->value();
-    game->pb_experience = ui->pb_experience->value();
-    game->pb_plot = ui->pb_plot->value();
-    game->pb_quest = ui->pb_quest->value();
+    pb_action_timer->stop();
 
     game->save();
 
+    /*
+     * this is unnecessary for "save on quit" but is left
+     * because it doesn't interfere and is needed for "save
+     * while running"
+    */
     pb_action_timer->start();
+}
+
+//void MainWindow::gameLoad()
+//{
+//    /*
+//     *      Reverse save data back into world instance
+//     */
+//    pb_action_timer->stop();
+
+//    game->load();
+
+//    MainWindow::postLoadUpdates();
+
+//    pb_action_timer->start();
+//}
+
+void MainWindow::postLoadUpdates()
+{
+    /*
+     *      Updates for ui / modal after load
+     *      info is poped into game.
+     */
+
+    // pb updates drive the game data - so pb's must be
+    // filled from modal dataspace on load return
+    ui->pb_action->setValue(game->pb_action);
+    ui->pb_encumbrance->setValue(game->pb_encumbrance);
+    ui->pb_experience->setValue(game->pb_experience);
+    ui->pb_plot->setValue(game->pb_plot);
+    ui->pb_quest->setValue(game->pb_quest);
+
+    // handle quests
+    MainWindow::updQuestList();
+
+    // update action conditions
+    ui->lbl_action->setText(game->Action);
+    pb_action_timer->setInterval(game->actionTime);
+
+    //update encumb count
+
+
+    ui->lst_plot->clear(); // wipe old plot list before initFrames
+
+    // handle most ui update functions
+    MainWindow::initFrames();
+}
+
+void MainWindow::updQuestList()
+{
+    // update the quest list box from game data
+    ui->lst_quests->clear();
+    if (game->quests.size() > 0)
+    {
+        // handle full quests list in game data
+        MainWindow::addQuest(game->quests.at(0)); // prime the list
+        for (int i=1; i < game->quests.size(); i++)
+        {
+            //      check last item in list
+            ui->lst_quests->setCurrentRow(ui->lst_quests->count() - 1);
+            ui->lst_quests->currentItem()->setCheckState(Qt::Checked);
+
+            // add current to end of listbox
+            MainWindow::addQuest(game->quests.at(i));
+        }
+    }
+    else
+    {
+        // no quests in game data - add one
+        game->quests.append(MainWindow::randQuest());
+        MainWindow::addQuest(game->quests.at(0));
+    }
 }

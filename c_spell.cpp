@@ -73,13 +73,13 @@ QString c_Spell::Level()
 Json::Value c_Spell::save()
 {
     Json::Value root;
-    root["Spell"]["NameIndex"] = nameIndex;
-    root["Spell"]["Level"] = levelValue;
+    root["NameIndex"] = nameIndex;
+    root["Level"] = levelValue;
     return root;
 }
 
-//void c_Spell::load(std::ifstream fh)
-//{
-//    fh >> nameIndex;
-//    fh >> levelValue;
-//}
+void c_Spell::load(Json::Value root)
+{
+    nameIndex = root["NameIndex"].asInt();
+    levelValue = root["Level"].asInt();
+}

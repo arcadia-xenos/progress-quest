@@ -2,6 +2,10 @@
 #define DIALOG_CHARSHEET_H
 
 #include <QDialog>
+#include <QString>
+#include <QList>
+#include "c_world.h"
+#include "pq7_config.h"
 
 namespace Ui {
 class Dialog_charSheet;
@@ -17,6 +21,14 @@ public:
     
 private:
     Ui::Dialog_charSheet *ui;
+
+    void initRaceCb();
+    void initClassCb();
+    void initStats(int base);
+
+public slots:
+    void transferCharToGame();
+    void testNameText();
 };
 
 #endif // DIALOG_CHARSHEET_H

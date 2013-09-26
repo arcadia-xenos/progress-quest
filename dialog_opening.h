@@ -1,7 +1,13 @@
 #ifndef DIALOG_OPENING_H
 #define DIALOG_OPENING_H
 
+#include <QObject>
 #include <QDialog>
+#include <QString>
+#include <QFileDialog>
+#include "dialog_charsheet.h"
+
+#include "c_world.h"
 
 namespace Ui {
 class Dialog_Opening;
@@ -17,6 +23,11 @@ public:
     
 private:
     Ui::Dialog_Opening *ui;
+
+public slots:
+    void randNewChar();
+    void createNewChar();
+    void loadChar();
 };
 
 #endif // DIALOG_OPENING_H

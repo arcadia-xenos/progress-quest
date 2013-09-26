@@ -33,11 +33,11 @@ Entity::Entity(QObject *parent) :
 
 int Entity::Encumbrance()
 {
-    int build(0);
+    int totWeight(0);
     for (int i = 0; i < Inventory.size(); i++) {
-        build += Inventory.at(i)->Weight * Quantity.at(i);
+        totWeight += Inventory.at(i)->Weight * Quantity.at(i);
     }
-    return build;
+    return totWeight;
 }
 
 QString Entity::purchType()
@@ -52,7 +52,7 @@ void Entity::setPurchNew(bool is_new)
     isNewPurchase = is_new;
 }
 
-unsigned long long int Entity::maxXP()
+qulonglong Entity::maxXP()
 {
     // xp for next level is calculated by exp curve
     // see pq7_level_advancement_curvatures.ggb (geogebra4 file)
@@ -177,13 +177,12 @@ Json::Value Entity::save()
     QString XP;
     */
     root[mKey]["XP"] = XP.toStdString();
+
     /*
     QList<c_Spell*> Spells;
     */
-    for (int i=0; i<Spells.size(); i++){
-        QString key = QString::fromStdString("Spell-") + QString::number(i);
-        root[mKey][key.toStdString()] = Spells.at(i)->save();
-    }
+    root[mKey]["Spells"] = Entity::spellListToArray(Spells);
+
     /*
     c_Item*         Weapon;
     c_Item*         Sheild;
@@ -191,28 +190,14 @@ Json::Value Entity::save()
     */
     root[mKey]["Weapon"] = Weapon->save();
     root[mKey]["Sheild"] = Sheild->save();
-//    Weapon->save(jsonRoot);
-//    Sheild->save(jsonRoot);
-//    jsonRoot << Armor.size() << std::endl;
-    for (int i=0; i < Armor.size(); i++) {
-        //        Armor.at(i)->save(jsonRoot);
-        QString catstr = QString::fromStdString("Armor-") + QString::number(i);
-        std::string aKey = catstr.toStdString();
-        root[mKey][aKey] = Armor.at(i)->save();
-    }
+    root[mKey]["Armor"] = Entity::itemListToArray(Armor);
+
     /*
     QList<c_Item*> Inventory;
     QList<int> Quantity;
     */
-//    jsonRoot << Inventory.size() << std::endl;
-    for (int i=0; i < Inventory.size(); i++) {
-//        Inventory.at(i)->save(jsonRoot);
-//        jsonRoot << Quantity.at(i) << std::endl;
-        QString catstr = QString::fromStdString("Inv-") + QString::number(i);
-        std::string iKey = catstr.toStdString();
-        root[mKey][iKey]["InvItem"] = Inventory.at(i)->save();
-        root[mKey][iKey]["Quantity"] = Quantity.at(i);
-    }
+    root[mKey]["Inventory"] = Entity::invListToArray(Inventory, Quantity);
+
     /*
     int Gold;
     */
@@ -221,64 +206,136 @@ Json::Value Entity::save()
     return root;
 }
 
-//void Entity::load(std::ifstream fh)
-//{
-//    // local helper values
-//    int arrSize;
+void Entity::load(Json::Value entityRoot)
+{
+    // unpack entity values
+    entityRoot = entityRoot.get("Entity", Json::objectValue);
 
-//    /*
-//    QString Name, Race, Voc, Level;
-//    */
-//    fh >> Name;
-//    fh >> Race;
-//    fh >> Voc;
-//    fh >> Level;
-//    /*
-//    QString STR, INT, WIS, DEX, CON, CHA, HPMax, MPMax;
-//    */
-//    fh >> STR;
-//    fh >> INT;
-//    fh >> WIS;
-//    fh >> DEX;
-//    fh >> CON;
-//    fh >> CHA;
-//    fh >> HPMax;
-//    fh >> MPMax;
-//    /*
-//    QString XP;
-//    unsigned long long maxXP();
-//    */
-//    fh >> XP;
-//    fh >> maxXP;
-//    /*
-//    QList<c_Spell*> Spells;
-//    */
-//    fh >> arrSize;
-//    for (int i=0; i < arrSize; i++){
-//        Spells.at(i)->load(fh);
-//    }
-//    /*
-//    c_Item*         Weapon;
-//    c_Item*         Sheild;
-//    QList<c_Item*>  Armor;
-//    */
-//    Weapon->load(fh);
-//    Sheild->load(fh);
-//    fh >> arrSize;
-//    for (int i=0; i < arrSize; i++) {
-//        Armor.at(i)->load(fh);
-//    }
-//    /*
-//    QList<c_Item*> Inventory;
-//    QList<int> Quantity;
-//    */
-//    fh >> arrSize;
-//    for (int i=0; i < arrSize; i++) {
-//        Inventory.at(i)->load(fh);
-//        fh >> Quantity.at(i);
-//    }
-//    /*
-//    int Gold;
-//    */
-//    fh >> Gold;
-//}
+    /*
+    QString Name, Race, Voc, Level;
+    */
+    Name = QString::fromStdString(entityRoot.get("Name", "").asString());
+    Race = QString::fromStdString(entityRoot.get("Race", "").asString());
+    Voc = QString::fromStdString(entityRoot.get("Class", "").asString());
+    Level = QString::fromStdString(entityRoot.get("Level", "").asString());
+    /*
+    QString STR, INT, WIS, DEX, CON, CHA, HPMax, MPMax;
+    */
+    STR = QString::fromStdString(entityRoot.get("STR", "").asString());
+    INT = QString::fromStdString(entityRoot.get("INT", "").asString());
+    WIS = QString::fromStdString(entityRoot.get("WIS", "").asString());
+    DEX = QString::fromStdString(entityRoot.get("DEX", "").asString());
+    CON = QString::fromStdString(entityRoot.get("CON", "").asString());
+    CHA = QString::fromStdString(entityRoot.get("CHA", "").asString());
+    HPMax = QString::fromStdString(entityRoot.get("HPMax", "").asString());
+    MPMax = QString::fromStdString(entityRoot.get("MPMax", "").asString());
+
+    /*
+    QString XP;
+    */
+    XP = QString::fromStdString(entityRoot.get("XP", "").asString());
+
+    /*
+    QList<c_Spell*> Spells;
+    */
+    Spells = Entity::arrayToSpellList(entityRoot.get("Spells", Json::arrayValue));
+
+    /*
+    c_Item*         Weapon;
+    c_Item*         Sheild;
+    QList<c_Item*>  Armor;
+    */
+    Weapon->load(entityRoot.get("Weapon",Json::arrayValue));
+    Sheild->load(entityRoot.get("Sheild",Json::arrayValue));
+    Armor = Entity::arrayToItemList(entityRoot.get("Armor",Json::arrayValue));
+
+    /*
+    QList<c_Item*> Inventory;
+    QList<int> Quantity;
+    */
+    Entity::arrayToInvList(entityRoot.get("Inventory",Json::arrayValue), Inventory, Quantity);
+
+    /*
+    int Gold;
+    */
+    Gold = entityRoot.get("Gold", 0).asInt();
+}
+
+Json::Value Entity::spellListToArray(QList<c_Spell *> &list)
+{
+    Json::Value array;
+    array.clear();
+    for (int i=0; i < list.size(); i++){
+        array.append(list.at(i)->save());
+    }
+    return array;
+}
+
+Json::Value Entity::itemListToArray(QList<c_Item *> &list)
+{
+    Json::Value array;
+    array.clear();
+    for (int i=0; i < list.size(); i++)
+    {
+        array.append(list.at(i)->save());
+    }
+    return array;
+}
+
+Json::Value Entity::invListToArray(QList<c_Item *> &iList, QList<int> &nList)
+{
+
+    Json::Value array, pair;
+    array.clear();
+    for (int i=0; i < iList.size(); i++)
+    {
+        pair.clear();
+
+        pair.append(iList.at(i)->save());
+        pair.append(nList.at(i));
+
+        array.append(pair);
+    }
+    return array;
+}
+
+QList<c_Spell *> Entity::arrayToSpellList(Json::Value array)
+{
+    QList<c_Spell *> list;
+    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    {
+        list.append(new c_Spell);
+        list.at(list.size() - 1)->load(array.get(i, Json::objectValue));
+    }
+    return list;
+}
+
+QList<c_Item *> Entity::arrayToItemList(Json::Value array)
+{
+    QList<c_Item *> list;
+    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    {
+        list.append(new c_Item);
+        list.at(list.size() - 1)->load(array.get(i, Json::objectValue));
+    }
+    return list;
+}
+
+void Entity::arrayToInvList(Json::Value array, QList<c_Item *> &iList, QList<int> &nList)
+{
+    Json::Value pair;
+    pair.clear();
+
+    iList.clear();
+    nList.clear();
+
+    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    {
+        pair = array.get(i, Json::arrayValue);
+
+        iList.append(new c_Item);
+        iList.at(iList.size() - 1)->load(pair.get((Json::ArrayIndex)0,Json::objectValue));
+
+        nList.append(pair.get((Json::ArrayIndex)1, 0).asInt());
+    }
+}

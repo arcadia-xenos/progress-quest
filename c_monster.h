@@ -28,7 +28,7 @@ public:
     bool makeMountedRange(int lowest_level, int highest_level);
     bool makeGroup(int level);
 
-    unsigned long long winXP();
+    qulonglong winXP();
 
     void makeSpecial(int level);
 
@@ -43,7 +43,7 @@ public:
 
     void clear();
     Json::Value save();
-//    void load(std::ifstream fh);
+    void load(Json::Value monsterRoot);
 
 signals:
     
@@ -63,12 +63,19 @@ private:
 
     QString discription;
     QString level;
-    unsigned long long int awardXP;
+    qulonglong awardXP;
 
     bool dropsFormatted;
 
     void makeRandMonster();
     QStringList pickSpcByLevel(int level);
+
+    // save / load helpers
+    Json::Value modListToArray(QStringList &mList, QList<int> &vList);
+    Json::Value dropListToArray(QStringList &list);
+    void arrayToModList(Json::Value array, QStringList &mList, QList<int> &vList);
+    QStringList arrayToDropList(Json::Value array);
+
 };
 
 #endif // C_MONSTER_H

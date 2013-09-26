@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QTimer>
+
 /*
 #include "entity.h"
 #include "c_spell.h"
@@ -10,6 +12,7 @@
 */
 #include "c_world.h"
 
+#include "dialog_opening.h"
 #include <QMainWindow>
 
 namespace Ui {
@@ -57,6 +60,8 @@ private:
     void updInvTbl();
     void updEquipTbl();
     void updStatsTbl();
+    void updQuestList();
+    void postLoadUpdates();
 
     void tranState();
 
@@ -71,7 +76,8 @@ public slots:
     void incr_pb_quest_value();
 
     void gameSave();
-
+    void gameLoad();
+\
     void setAction();
 };
 

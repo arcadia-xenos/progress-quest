@@ -328,100 +328,106 @@ Json::Value c_Item::save()
 
     //t_pq_equip itemType;
     //fh << (int)itemType << std::endl;
-    root[mKey]["Type"] = (int)itemType;
+    root["Type"] = (int)itemType;
 
     //QString basename;
     //int     basegrade;
-    //fh << basename.toStdString() << std::endl;
-    //fh << basegrade << std::endl;
-    root[mKey]["Name"] = basename.toStdString();
-    root[mKey]["BaseGrade"] = basegrade;
+    root["Name"] = basename.toStdString();
+    root["BaseGrade"] = basegrade;
 
     /*
     QStringList modifiers;
     QList<bool> modprefix;
     QList<int>  modgrades;
     */
-    //fh << modifiers.size() << std::endl;
-    for (int i=0; i < modifiers.size(); i++) {
-        //fh << modifiers.at(i).toStdString() << " ";
-        //fh << modifiers.at(i).toStdString() << std::endl;
-        QString modkey = QString::fromStdString("Mod-") + QString::number(i);
-        root[mKey][modkey.toStdString()]["Modifier"] = modifiers.at(i).toStdString();
-        root[mKey][modkey.toStdString()]["ModPrefix"] = modprefix.at(i);
-        root[mKey][modkey.toStdString()]["ModGrade"] = modgrades.at(i);
-    }
-//    //fh << std::endl; // end of line
-//    fh << modprefix.size() << std::endl;
-//    for (int i=0; i < modprefix.size(); i++) {
-//        if (modprefix.at(i))
-//            fh << "true" << std::endl;
-//        else
-//            fh << "false" << std::endl;
-//        //fh << modprefix.at(i) ? "true" : "false" << std::endl;
-//    }
-//    fh << modgrades.size() << std::endl;
-//    for (int i=0; i < modgrades.size(); i++) {
-//        fh << modgrades.at(i) << std::endl;
-//    }
-
+    root["Modifiers"] = c_Item::modListToArray(modifiers, modprefix, modgrades);
     //int itemBonus;
-//    fh << itemBonus << std::endl;
-    root[mKey]["Bonus"] = itemBonus;
+    root["Bonus"] = itemBonus;
 
     //int price;
-//    fh << price << std::endl;
-    root[mKey]["Price"] = price;
+    root["Price"] = price;
 
     //int armorSlot;
-//    fh << armorSlot << std::endl;
-    root[mKey]["ArmorSlot"] = armorSlot;
+    root["ArmorSlot"] = armorSlot;
+
+    /*
+    int Weight;
+    */
+    root["Weight"] = Weight;
 
     return root;
 }
 
-//void c_Item::load(std::ifstream fh)
-//{
-//    // locals to help load back values
-//    int arrSize;
-//    QString boolValue;
+void c_Item::load(Json::Value itemRoot)
+{
+    //t_pq_equip itemType;
+    itemType = (t_pq_equip) itemRoot.get("Type", 0).asInt();
 
-//    //t_pq_equip itemType;
-//    fh >> itemType;
+    //QString basename;
+    //int     basegrade;
+    basename = QString::fromStdString(itemRoot.get("Name", "").asString());
+    basegrade = itemRoot.get("BaseGrade", 0).asInt();
 
-//    //QString basename;
-//    //int     basegrade;
-//    fh >> basename;
-//    fh >> basegrade;
+    /*
+    QStringList modifiers;
+    QList<bool> modprefix;
+    QList<int>  modgrades;
+    */
+    c_Item::arrayToModList(itemRoot.get("Modifiers", Json::arrayValue),
+                           modifiers,
+                           modprefix,
+                           modgrades
+                           );
 
-//    /*
-//    QStringList modifiers;
-//    QList<bool> modprefix;
-//    QList<int>  modgrades;
-//    */
-//    fh >> arrSize;
-//    for (int i=0; i < arrSize; i++) {
-//        fh >> modifiers.at(i);
-//    }
-//    fh >> arrSize;
-//    for (int i=0; i < arrSize; i++) {
-//        fh >> boolValue;
-//        if (boolValue = tr("true"))
-//            modprefix.at(i) = true;
-//        else
-//            modprefix.at(i) = false;
-//    }
-//    fh >> arrSize;
-//    for (int i=0; i < arrSize; i++) {
-//        fh >> modgrades.at(i);
-//    }
+    //int itemBonus;
+    itemBonus = itemRoot.get("Bonus", 0).asInt();
 
-//    //int itemBonus;
-//    fh >> itemBonus;
+    //int price;
+    price = itemRoot.get("Price", 0).asInt();
 
-//    //int price;
-//    fh >> price;
+    //int armorSlot;
+    armorSlot = itemRoot.get("ArmorSlot", 0).asInt();
 
-//    //int armorSlot;
-//    fh >> armorSlot;
-//}
+    //int Weight;
+    Weight = itemRoot.get("Weight", 1).asInt();
+}
+
+Json::Value c_Item::modListToArray(QStringList &mList, QList<bool> &pList, QList<int> &gList)
+{
+    Json::Value array, set;
+    array.clear();
+
+    for (int i=0; i < mList.size(); i++)
+    {
+        set.clear();
+
+        set.append(mList.at(i).toStdString());
+        set.append(pList.at(i));
+        set.append(gList.at(i));
+
+        array.append(set);
+    }
+    return array;
+}
+
+void c_Item::arrayToModList(Json::Value array, QStringList &mList, QList<bool> &pList, QList<int> &gList)
+{
+    Json::Value set;
+
+    // if not already - wipe lists
+    mList.clear();
+    pList.clear();
+    gList.clear();
+
+    // cycle through items
+    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    {
+        //set.clear(); //needed?
+        set = array.get(i,Json::arrayValue);
+
+        // read in ordered set of values
+        mList.append(QString::fromStdString(set.get((Json::ArrayIndex)0, "").asString()));
+        pList.append(set.get((Json::ArrayIndex)1, false).asBool());
+        gList.append(set.get((Json::ArrayIndex)2, 0).asInt());
+    }
+}

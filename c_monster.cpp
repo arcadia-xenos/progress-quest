@@ -67,7 +67,7 @@ QString c_Monster::Level()
     return level;
 }
 
-unsigned long long int c_Monster::winXP()
+qulonglong c_Monster::winXP()
 {
     // monster xp based on parabolic curve
     // see pq7_level_advancement_curvatures.ggb (geogebra4 file)
@@ -84,7 +84,7 @@ unsigned long long int c_Monster::winXP()
         if (isSpecial)
             base_xp +=  5.0; // careful
 
-        awardXP = (unsigned long long int)
+        awardXP = (qulonglong)
                 (base_xp + (pow(lv,2.0) / pow(factor,2.0)) );
     }
 
@@ -396,99 +396,126 @@ bool c_Monster::makeGroup(int level)
 
 Json::Value c_Monster::save()
 {
-    Json::Value root;
-    std::string mKey = "Monster";
+    Json::Value root; // Json::objectValue
+
     /*
     QString monster_race;
     int monster_level;
     */
-//    fh << monster_race.toStdString() << std::endl;
-//    fh << monster_level << std::endl;
-    root[mKey]["Race"] = monster_race.toStdString();
-    root[mKey]["Level"] = monster_level;
+    root["Race"] = monster_race.toStdString();
+    root["Level"] = monster_level;
+
     /*
     QStringList mods;
     QList<int> mod_values;
     */
-//    fh << mods.size() << std::endl;
-    for (int i=0; i < mods.size(); i++) {
-//        fh << mods.at(i).toStdString() << std::endl;
-        QString catstr = QString::fromStdString("Mod-") + QString::number(i);
-        std::string modkey = catstr.toStdString();
-        root[mKey][modkey]["Modifier"] = mods.at(i).toStdString();
-        root[mKey][modkey]["Value"] = mod_values.at(i);
-    }
-//    fh << mod_values.size() << std::endl;
-//    for (int i=0; i < mod_values.size(); i++) {
-//        fh << mod_values.at(i) << std::endl;
-//    }
+    root["Modifiers"] = c_Monster::modListToArray(mods, mod_values);
+
     /*
     QStringList drops;
     bool dropsFormatted;
     */
-    //fh << drops.size() << std::endl;
-    for (int i=0; i < drops.size(); i++) {
-        QString catstr = QString::fromStdString("Drop-") + QString::number(i);
-        std::string dropkey = catstr.toStdString();
-        //fh << drops.at(i).toStdString() << std::endl;
-        root[mKey][dropkey]["Drop"] = drops.at(i).toStdString();
-    }
-//    if (dropsFormatted)
-//        fh << "true" << std::endl;
-//    else
-//        fh << "false" << std::endl;
-    //fh << dropsFormatted ? tr("true") : tr("false") << std::endl;
-    root[mKey]["DropsFormatted"] = dropsFormatted;
+    root["Drops"] = c_Monster::dropListToArray(drops);
+    root["DropsFormatted"] = dropsFormatted;
+
     /*
     QString discription;
     QString level;
-    unsigned long long int awardXP;
+    qulonglong awardXP;
     */
-//    fh << discription.toStdString() << std::endl;
-//    fh << level.toStdString() << std::endl;
-//    fh << awardXP << std::endl;
-    root[mKey]["Discripttion"] = discription.toStdString();
-    root[mKey]["Level"] = level.toStdString();
-    root[mKey]["AwardXP"] = awardXP;
+    root["Discription"] = discription.toStdString();
+    root["EffectiveLevel"] = level.toStdString();
+    // attempt qulonglong to string convert
+    root["AwardXP"] = QString::number(awardXP).toStdString();
 
     return root;
 }
 
-//void c_Monster::load(std::ifstream fh)
-//{
-//    /*
-//    QString monster_race;
-//    int monster_level;
-//    */
-//    fh >>  monster_race;
-//    fh >> monster_level;
-//    /*
-//    QStringList mods;
-//    QList<int> mod_values;
-//    */
-//    fh >> mods.size();
-//    for (int i=0; i < mods.size(); i++) {
-//        fh >> mods.at(i);
-//    }
-//    fh >> mod_values.size();
-//    for (int i=0; i < mods_values.size(); i++) {
-//        fh >> mods_values.at(i);
-//    }
-//    /*
-//    QStringList drops;
-//    bool dropsFormatted;
-//    */
-//    fh >> drops.size();
-//    for (int i=0; i < drops.size(); i++) {
-//        fh >> drops.at(i);
-//    }
-//    fh >> dropsFormatted ? tr("true") : tr("false");
-//    /*
-//    QString discription;
-//    QString level;
-//    unsigned long long int awardXP;
-//    */
-//    fh >> discription;
-//    fh >> level;
-//    fh >> awardXP;
-//}
+void c_Monster::load(Json::Value monsterRoot)
+{
+    //QVariant<QString> var;
+
+    /*
+    QString monster_race;
+    int monster_level;
+    */
+    monster_race = QString::fromStdString(monsterRoot.get("Race", "").asString());
+    monster_level = monsterRoot.get("Level", 0).asInt();
+    /*
+    QStringList mods;
+    QList<int> mod_values;
+    */
+    c_Monster::arrayToModList(monsterRoot.get("Modifiers", Json::objectValue), mods, mod_values);
+
+    /*
+    QStringList drops;
+    bool dropsFormatted;
+    */
+    drops = c_Monster::arrayToDropList(monsterRoot.get("Drops", Json::objectValue));
+
+    /*
+    QString discription;
+    QString level;
+    qulonglong awardXP;
+    */
+    discription = QString::fromStdString(monsterRoot.get("Discription", "").asString());
+    level = QString::fromStdString(monsterRoot.get("EffectiveLevel", "").asString());
+    // attempt string to qulonglong convert
+    awardXP = QString::fromStdString(monsterRoot.get("AwardXP", "0").asString()).toULongLong();
+}
+
+Json::Value c_Monster::modListToArray(QStringList &mList, QList<int> &vList)
+{
+    Json::Value array, pair;
+    array.clear();
+    for (int i=0; i < mList.size(); i++)
+    {
+        pair.clear();
+
+        pair.append(mList.at(i).toStdString());
+        pair.append(vList.at(i));
+
+        array.append(pair);
+    }
+    return array;
+}
+
+Json::Value c_Monster::dropListToArray(QStringList &list)
+{
+    Json::Value array;
+    array.clear();
+    for (int i=0; i < list.size(); i++)
+    {
+        array.append(list.at(i).toStdString());
+    }
+    return array;
+}
+
+void c_Monster::arrayToModList(Json::Value array, QStringList &mList, QList<int> &vList)
+{
+    Json::Value pair;
+    Json::ArrayIndex i;
+    for (i=0; i < array.size(); i++)
+    {
+        pair.clear();
+
+        pair = array.get(i,Json::arrayValue);
+        mList.append(QString::fromStdString(pair.get((Json::ArrayIndex)0,"").asString()));
+        vList.append(pair.get((Json::ArrayIndex)1,0).asInt());
+    }
+}
+
+QStringList c_Monster::arrayToDropList(Json::Value array)
+{
+    Json::ArrayIndex i;
+    QStringList list;
+    list.clear();
+
+    for(i=0; i < array.size(); i++)
+    {
+        list.append(QString::fromStdString(array.get(i,"").asString()));
+    }
+    return list;
+
+}
+

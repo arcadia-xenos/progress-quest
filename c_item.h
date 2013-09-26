@@ -56,7 +56,7 @@ public:
 
     void clear();
     Json::Value save();
-//    void load(std::ifstream fh);
+    void load(Json::Value itemRoot);
 
 private:
     t_pq_equip itemType;
@@ -73,6 +73,11 @@ private:
     int price;
 
     int armorSlot;
+
+    // save / load helpers
+    Json::Value modListToArray(QStringList &mList, QList<bool> &pList, QList<int> &gList);
+    void arrayToModList(Json::Value array, QStringList &mList, QList<bool> &pList, QList<int> &gList);
+
 };
 
 #endif // C_ITEM_H

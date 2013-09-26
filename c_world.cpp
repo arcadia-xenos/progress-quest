@@ -13,8 +13,7 @@ c_World::c_World(QObject *parent) :
     pb_experience = 0;
     pb_plot = 0;
     pb_quest = 0;
-    //c_World::initPlayer();
-    jsonRoot.clear();
+    isLoaded = false;
 }
 
 void c_World::initPlayer()
@@ -74,7 +73,7 @@ c_Item* c_World::makeEqByGrade(t_pq_equip eqtype, int grade)
  *      Make Equipment By Grade
  *
  *  calls:      c_Item methods
- *  rtns:       c_Item (of specified level)
+ *  rtns:       c_Item* (of specified level)
  *  affects:    none
  *
  *  Used by various to produce items of specific type at
@@ -151,22 +150,27 @@ c_Item* c_World::makeEqByGrade(t_pq_equip eqtype, int grade)
 
 void c_World::save()
 {
+    c_World::save("pq_savefile.pqd");
+}
 
-    std::ofstream fh_saveFile;
-    fh_saveFile.open("pq_savefile_test.pqd",std::ios::trunc);
+void c_World::save(QString filename)
+{
+    Json::Value root;
+    std::string mKey = "World";
 
-    if (fh_saveFile.is_open()) {
+    std::ofstream saveFile;
+    saveFile.open(filename.toStdString().c_str(),std::ios::trunc);
+
+    if (saveFile.is_open()) {
         /*
         int Act;
         QString Action;
         t_pq_state State;
         */
-        jsonRoot["World"]["Act"] = Act;
-        jsonRoot["World"]["Action"] = Action.toStdString();
-        jsonRoot["World"]["State"] = (int)State;
-//        fh_saveFile << Act << std::endl;
-//        fh_saveFile << Action.toStdString() << std::endl;
-//        fh_saveFile << (int)State << std::endl;
+        root[mKey]["Act"] = Act;
+        root[mKey]["Action"] = Action.toStdString();
+        root[mKey]["ActionTime"] = actionTime;
+        root[mKey]["State"] = (int)State;
 
         /*
         int pb_action;
@@ -175,70 +179,149 @@ void c_World::save()
         int pb_plot;
         int pb_quest;
         */
-        jsonRoot["World"]["pb_action"] = pb_action;
-        jsonRoot["World"]["pb_experience"] = pb_experience;
-        jsonRoot["World"]["pb_encumbrance"] = pb_encumbrance;
-        jsonRoot["World"]["pb_plot"] = pb_plot;
-        jsonRoot["World"]["pb_quest"] = pb_quest;
-//        fh_saveFile << pb_action << std::endl;
-//        fh_saveFile << pb_experience << std::endl;
-//        fh_saveFile << pb_encumbrance << std::endl;
-//        fh_saveFile << pb_plot << std::endl;
-//        fh_saveFile << pb_quest << std::endl;
+        root[mKey]["pb_action"] = pb_action;
+        root[mKey]["pb_experience"] = pb_experience;
+        root[mKey]["pb_encumbrance"] = pb_encumbrance;
+        root[mKey]["pb_plot"] = pb_plot;
+        root[mKey]["pb_quest"] = pb_quest;
+
+        /*
+        QStringList quests;
+        */
+        root[mKey]["Quests"] = c_World::listToArray(quests);
 
         //Entity* Player;
-        jsonRoot["World"]["Player"] = Player->save();
+        root[mKey]["Player"] = Player->save();
 
         //c_Monster* Monster;
-        jsonRoot["World"]["Monster"] = Monster->save();
+        root[mKey]["Monster"] = Monster->save();
 
     }
     else
     {
         // file failed to open... wtf
     }
-    fh_saveFile << jsonRoot << std::endl;
-    fh_saveFile.close();
+
+    saveFile << root << std::endl;
+
+    saveFile.close();
 }
 
-//void c_World::load()
-//{
-//    std::ifstream fh_saveFile;
-//    fh_saveFile.open("pq_savefile_test");
+void c_World::load()
+{
+    c_World::load(QString::fromStdString("pq_savefile.pqd"));
+}
 
-//    if (fh_saveFile.is_open()) {
+void c_World::load(QString filename)
+{
+    Json::Value root;
+    Json::Reader readSave;
 
-//        //Entity* Player;
-//        //Player->load(fh_saveFile);
+    std::ifstream saveFile;
+    saveFile.open(filename.toStdString().c_str());
 
-//        //c_Monster* Monster;
-//        //Monster->load(fh_saveFile);
+    // open file
+    if (saveFile.is_open())
+    {
+        // parse json
+        if (! readSave.parse(saveFile, root, false))
+        {
+            // failed to read
+            //std::cerr << "JSON Parse fail on file " << filename << ":" << std::endl;
+            //std::cerr << readSave.getFormatedErrorMessages();
+            //exit (1);
+            QMessageBox mBox;
+            mBox.setWindowTitle(QString::fromStdString("JSON Parse fail on file ") + filename );
+            mBox.setText(QString::fromStdString(readSave.getFormatedErrorMessages()));
+            mBox.exec();
+            exit(1);
+        }
+    }
+    else
+    {
+        // file fail
+        //std::cerr << "file " << filename << " failed to open" << std::endl;
+        //exit(1);
+        QMessageBox mBox;
+        mBox.setWindowTitle(QString::fromStdString("Progress Quest load ") + filename);
+        mBox.setText(QString::fromStdString("Failed to open"));
+        mBox.exec();
+        exit(1);
+    }
+    saveFile.close();
+    // end file parsing
 
-//        /*
-//        int Act;
-//        QString Action;
-//        t_pq_state State;
-//        */
-////        fh_saveFile >> Act;
-////        fh_saveFile >> Action;
-////        fh_saveFile >> State;
+    //chain the json loader
+    c_World::load(root);
+}
 
-//        /*
-//        int pb_action;
-//        int pb_experience;
-//        int pb_encumbrance;
-//        int pb_plot;
-//        int pb_quest;
-//        */
-////        fh_saveFile >> pb_action;
-////        fh_saveFile >> pb_experience;
-////        fh_saveFile >> pb_encumbrance;
-////        fh_saveFile >> pb_plot;
-////        fh_saveFile >> pb_quest;
-//    }
-//    else
-//    {
-//        // file failed to open... wtf
-//    }
-//    fh_saveFile.close();
-//}
+void c_World::load(Json::Value root)
+{
+    // unpack world values from anonymous main json object
+    root = root.get("World", Json::Value::null);
+
+    //Entity* Player;
+    Player->load(root.get("Player", Json::objectValue));
+
+    //c_Monster* Monster;
+    Monster->load(root.get("Monster", Json::objectValue));
+
+    /*
+        int Act;
+        QString Action;
+        t_pq_state State;
+    */
+    Act     = root.get("Act", 99).asInt();
+    Action  = QString::fromStdString(root.get("Action", "Knock knock...").asString());
+    actionTime = root.get("ActionTime", 50).asInt();
+    State   = (t_pq_state)root.get("State", 0).asInt();
+
+    /*
+        QStringList quests;
+    */
+    // if not found, passes empty json array to helper which will return empty qstringlist
+    quests = c_World::arrayToList(root.get("Quests", Json::arrayValue));
+
+    /*
+        int pb_action;
+        int pb_experience;
+        int pb_encumbrance;
+        int pb_plot;
+        int pb_quest;
+    */
+    pb_action       = root.get("pb_action", 99).asInt();
+    pb_experience   = root.get("pb_experience", 99).asInt();
+    pb_encumbrance  = root.get("pb_encumbrance", 99).asInt();
+    pb_plot         = root.get("pb_plot", 99).asInt();
+    pb_quest        = root.get("pb_quest", 99).asInt();
+
+    // set loaded flag
+    isLoaded = true;
+}
+
+// save helper for quest list
+Json::Value c_World::listToArray(QStringList &list)
+{
+    Json::Value array;
+    array.clear();
+    for (int i=0; i < list.size(); i++)
+    {
+        array.append(list.at(i).toStdString());
+    }
+    return array;
+}
+
+
+// load helper for quest list
+QStringList c_World::arrayToList(Json::Value array)
+{
+    QStringList list;
+    list.clear();
+
+    // load json array to qstring list
+    for (unsigned int i=0; i < array.size(); i++)
+    {
+        list.append( QString::fromStdString(array[i].asString()) );
+    }
+    return list;
+}

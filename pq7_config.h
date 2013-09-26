@@ -52,7 +52,7 @@ public:
     QString sufPlural(QString string);
     int fnPercent(int value, int percent);
     int fnPercentOf(int value, int of);
-    unsigned long long int fnPercentOf(unsigned long long int value, unsigned long long int of);
+    qulonglong fnPercentOf(qulonglong value, qulonglong of);
     int fnRandTop(int value, int percent);
     QString fnInterpStr(QString pattern, QString interpolation);
 

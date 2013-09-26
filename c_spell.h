@@ -24,8 +24,9 @@ public:
     void setRandName();
     void setSpellLevel(int level);
 
+    // serialization methods
     Json::Value save();
-//    void load(std::ifstream fh);
+    void load(Json::Value root);
 
 private:
     int nameIndex, levelValue;
