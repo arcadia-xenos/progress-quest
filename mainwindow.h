@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QTimer>
+#include <QKeyEvent>
+#include <QFocusEvent>
 
 /*
 #include "entity.h"
@@ -65,6 +67,9 @@ private:
 
     void tranState();
 
+    // key responder reimplementation
+    void keyPressEvent(QKeyEvent * k);
+
     // timer drive
     QTimer *pb_action_timer;
 
@@ -76,7 +81,7 @@ public slots:
     void incr_pb_quest_value();
 
     void gameSave();
-    void gameLoad();
+    //void gameLoad();
 \
     void setAction();
 };

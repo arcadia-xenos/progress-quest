@@ -59,11 +59,13 @@ qulonglong Entity::maxXP()
     // for more info
 
     float Lv = Level.toFloat();
-    float base = 1130.0; // xp at bend level
     float curvature = 1.09512; // coeffecient
     float bend = 20.0; // start bending at level
+    float base = 1130.0; // xp at bend level
 
     return (int)(base * pow(curvature, (Lv - bend)) );
+    //2^64 = 1130 * 1.09512^(x - 20)
+    //x = 430.85
 }
 
 int Entity::maxEncumbrance()

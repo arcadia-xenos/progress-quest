@@ -90,9 +90,13 @@ int c_Item::Appraisal()
         else                factor = 1;
 
         // factor by type (any = by grade only)
-        if      (itemType == pq_equip_weapon) factor += 800;
-        else if (itemType == pq_equip_shield) factor += 600;
-        else if (itemType == pq_equip_armor)  factor += 700;
+//        if      (itemType == pq_equip_weapon) factor += 8;
+//        else if (itemType == pq_equip_shield) factor += 6;
+//        else if (itemType == pq_equip_armor)  factor += 7;
+
+        if      (itemType == pq_equip_weapon) factor += 18;
+        else if (itemType == pq_equip_shield) factor += 26;
+        else if (itemType == pq_equip_armor)  factor += 22;
 
         // set price
         price = g * factor;
@@ -116,11 +120,12 @@ int c_Item::Grade()
 
     // assess mods
     for(int i(0); i < modgrades.size(); i++) {
+        //g += (float)g * ((float)modgrades.at(i)/5.0) ;
         g += modgrades.at(i);
     }
 
     // add bonus
-    g += itemBonus;
+    g += (float)itemBonus;
 
     return g;
 }
@@ -225,7 +230,8 @@ void c_Item::makeBitem()
 void c_Item::makeSpecial()
 {
     basename = gConfig->Specials.at(rand() % gConfig->Specials.size());
-    basegrade = 50 + (rand() % 20 - 10); // [40..59]
+    //basegrade = 25 + (rand() % 20 - 10); // [15..34]
+    basegrade = 15 + (rand() % 20 - 10); // [5..19]
     Weight = 1;
     itemType = pq_equip_any;
 }

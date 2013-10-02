@@ -22,6 +22,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // setup / show ui
     ui->setupUi(this);
 
+    // focus policies
+    ui->centralWidget->setFocusPolicy(Qt::StrongFocus);
+    ui->centralWidget->setFocus();
+
     // connect the save / load buttons (debugging)
     //connect(ui->btn_save, SIGNAL(released()), this, SLOT(gameSave()));
     //connect(ui->btn_load, SIGNAL(released()), this, SLOT(gameLoad()));
@@ -65,6 +69,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::incr_pb_action_value()
 {
+    if (game->isDebugFlagSet(pq_debug_always_trigger_action))
+        ui->pb_action->setValue(99);
+
     int value = ui->pb_action->value();
     if ( ++value < ui->pb_action->maximum())
     {
@@ -97,6 +104,10 @@ void MainWindow::incr_pb_action_value()
 
         MainWindow::tranState();
     }
+
+    if (game->isDebugFlagSet(pq_debug_action_triggers_save))
+        MainWindow::gameSave();
+
     game->pb_action = ui->pb_action->value();
 }
 
@@ -136,6 +147,7 @@ void MainWindow::incr_pb_plot_value()
 
         //      clear quests and start new one
         ui->lst_quests->clear();
+        game->quests.clear();
         MainWindow::addQuest(MainWindow::randQuest());
 
         //      add new act
@@ -432,7 +444,10 @@ void MainWindow::setAction()
 
     // update final conditions
     ui->lbl_action->setText(game->Action);
-    pb_action_timer->setInterval(game->actionTime);
+    if (game->isDebugFlagSet(pq_debug_zero_action_timer))
+        pb_action_timer->setInterval(1);
+    else
+        pb_action_timer->setInterval(game->actionTime);
 }
 
 void MainWindow::tranState()
@@ -488,7 +503,7 @@ void MainWindow::setMonster()
                 game->Monster->makeGroup(Lv)
            )
             success = true;
-    } while (! success);
+    } while (! success); // potential infinite
 }
 
 void MainWindow::addMonDrop()
@@ -618,6 +633,9 @@ void MainWindow::winStats()
 
 void MainWindow::winSpells()
 {
+    if (ui->tbl_spells->rowCount() >= gConfig->Spells.size())
+        return; // guard vs unneeded
+
     bool found = false;
 
     c_Spell* spell = new c_Spell;
@@ -907,8 +925,17 @@ void MainWindow::postLoadUpdates()
     ui->lbl_action->setText(game->Action);
     pb_action_timer->setInterval(game->actionTime);
 
-    //update encumb count
-
+    // update char sht label for debug mode
+    if (! game->isDebugFlagSet(pq_debug_none))
+    {
+        ui->lbl_char->setText("Character Sheet [debug mode]");
+        ui->lbl_char->update();
+    }
+    else
+    {
+        ui->lbl_char->setText("Character Sheet");
+        ui->lbl_char->update();
+    }
 
     ui->lst_plot->clear(); // wipe old plot list before initFrames
 
@@ -939,5 +966,65 @@ void MainWindow::updQuestList()
         // no quests in game data - add one
         game->quests.append(MainWindow::randQuest());
         MainWindow::addQuest(game->quests.at(0));
+    }
+}
+
+
+void MainWindow::keyPressEvent(QKeyEvent * k)
+{
+    /*
+     *      QT 4.8 Docs specify that unhandled keys must be
+     *      sent back to the QWidget handler so certain default
+     *      behaviors will occur
+     */
+    if (game->isDebugFlagSet(pq_debug_active))
+    {
+        // debug is active here
+        if (k->key() == Qt::Key_Escape)
+        {
+            // deactivate debug
+            game->debugClear();
+            ui->lbl_char->setText("Character Sheet");
+            ui->lbl_char->update();
+            return;
+        }
+
+        // we are already in debug mode
+        if(k->key() == Qt::Key_R)   // reset debug - without losing mode
+        {
+            game->debugActive();
+            return;
+        }
+
+        if(k->key() == Qt::Key_0)   // toggle zero action time
+        {
+            game->toggleDebugFlag(pq_debug_zero_action_timer);
+            return;
+        }
+
+        if(k->key() == Qt::Key_S)   // toggle save on action
+        {
+            game->toggleDebugFlag(pq_debug_action_triggers_save);
+            return;
+        }
+
+        if(k->key() == Qt::Key_A)   // toggle always trigger action
+        {
+            game->toggleDebugFlag(pq_debug_always_trigger_action);
+            return;
+        }
+
+
+    }
+    else
+    {
+        // not in debug mode - yet
+        if (k->key() == Qt::Key_Escape)
+        {
+            // activate debug
+            game->debugActive();
+            ui->lbl_char->setText("Character Sheet [debug mode]");
+            ui->lbl_char->update();
+        }
     }
 }

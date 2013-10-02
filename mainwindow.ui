@@ -21,6 +21,9 @@
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="3">
      <widget class="QFrame" name="frm_story">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -30,6 +33,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <widget class="QLabel" name="lbl_plot">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Plot Development</string>
          </property>
@@ -37,6 +43,9 @@
        </item>
        <item>
         <widget class="QListWidget" name="lst_plot">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectItems</enum>
          </property>
@@ -47,6 +56,9 @@
        </item>
        <item>
         <widget class="QProgressBar" name="pb_plot">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="value">
           <number>0</number>
          </property>
@@ -54,16 +66,26 @@
        </item>
        <item>
         <widget class="QLabel" name="lbl_quests">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Quests</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="lst_quests"/>
+        <widget class="QListWidget" name="lst_quests">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QProgressBar" name="pb_quest">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="value">
           <number>0</number>
          </property>
@@ -74,6 +96,9 @@
     </item>
     <item row="0" column="2">
      <widget class="QFrame" name="frm_inventory">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -83,6 +108,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QLabel" name="lbl_equipment">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Equipment</string>
          </property>
@@ -97,6 +125,9 @@
            <weight>50</weight>
            <bold>false</bold>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="tabKeyNavigation">
           <bool>false</bool>
@@ -182,6 +213,9 @@
        </item>
        <item>
         <widget class="QLabel" name="lbl_inventory">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Inventory</string>
          </property>
@@ -196,6 +230,9 @@
            <weight>50</weight>
            <bold>false</bold>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="tabKeyNavigation">
           <bool>false</bool>
@@ -278,6 +315,9 @@
        </item>
        <item>
         <widget class="QLabel" name="lbl_encumbrance">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Encumbrance</string>
          </property>
@@ -285,6 +325,9 @@
        </item>
        <item>
         <widget class="QProgressBar" name="pb_encumbrance">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="value">
           <number>0</number>
          </property>
@@ -295,6 +338,9 @@
     </item>
     <item row="1" column="1" colspan="3">
      <widget class="QFrame" name="frm_action">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -304,6 +350,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QLabel" name="lbl_action">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Action</string>
          </property>
@@ -311,6 +360,9 @@
        </item>
        <item>
         <widget class="QProgressBar" name="pb_action">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="value">
           <number>0</number>
          </property>
@@ -321,6 +373,9 @@
     </item>
     <item row="0" column="1">
      <widget class="QFrame" name="frm_char">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -330,6 +385,9 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QLabel" name="lbl_char">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Character Sheet</string>
          </property>
@@ -350,6 +408,9 @@
            <weight>50</weight>
            <bold>false</bold>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="tabKeyNavigation">
           <bool>false</bool>
@@ -483,6 +544,9 @@
            <weight>50</weight>
            <bold>false</bold>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="tabKeyNavigation">
           <bool>false</bool>
@@ -678,6 +742,9 @@
        </item>
        <item>
         <widget class="QLabel" name="lbl_xp">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Experience</string>
          </property>
@@ -685,6 +752,9 @@
        </item>
        <item>
         <widget class="QProgressBar" name="pb_experience">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="value">
           <number>0</number>
          </property>
@@ -692,6 +762,9 @@
        </item>
        <item>
         <widget class="QLabel" name="lbl_spells">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Spell Book</string>
          </property>
@@ -706,6 +779,9 @@
            <weight>50</weight>
            <bold>false</bold>
           </font>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
          </property>
          <property name="tabKeyNavigation">
           <bool>false</bool>

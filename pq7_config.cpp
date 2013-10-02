@@ -42,28 +42,50 @@ c_Config::c_Config()
                << "Mildewed|-2" << "Torn|-3" << "Dented|-3" << "Cursed|-5" << "Plastic|-4" << "Cracked|-4"
                << "Warped|-3" << "Corroded|-3";
 
+//    Shields << "Parasol|0" << "Pie Plate|1" << "Garbage Can Lid|2" << "Buckler|3"
+//            << "Plexiglass|4" << "Fender|4" << "Round Shield|5" << "Carapace|5"
+//            << "Scutum|6" << "Propugner|6" << "Kite Shield|7" << "Pavise|8"
+//            << "Tower Shield|9" << "Baroque Shield|11" << "Aegis|12"
+//            << "Magnetic Field|18";
+
+//    Armors << "Lace|1" << "Macrame|2" << "Burlap|3" << "Canvas|4" << "Flannel|5"
+//           << "Chamois|6" << "Pleathers|7" << "Leathers|8" << "Bearskin|9"
+//           << "Ringmail|10" << "Scale Mail|12" << "Chainmail|14" << "Splint Mail|15"
+//           << "Platemail|16" << "ABS|17" << "Kevlar|18" << "Titanium|19"
+//           << "Mithril Mail|20" << "Diamond Mail|25" << "Plasma|30";
+
+//    Weapons << "Stick|0" << "Broken Bottle|1" << "Shiv|1" << "Sprig|1" << "Oxgoad|1"
+//            << "Eelspear|2" << "Bowie Knife|2" << "Claw Hammer|2" << "Handpeen|2"
+//            << "Andiron|3" << "Hatchet|3" << "Tomahawk|3" << "Hackbarm|3" << "Crowbar|4"
+//            << "Mace|4" << "Battleadze|4" << "Leafmace|5" << "Shortsword|5"
+//            << "Longiron|5" << "Poachard|5" << "Baselard|5" << "Whinyard|6"
+//            << "Broadsword|7" << "Kreen|7" << "Warhammer|7" << "Morning Star|8"
+//            << "Pole-adze|8" << "Spontoon|8" << "Bastard Sword|9" << "Peen-arm|9"
+//            << "Culverin|10" << "Lance|10" << "Halberd|11" << "Poleax|12"
+//            << "Bandyclef|15";
+
     Shields << "Parasol|0" << "Pie Plate|1" << "Garbage Can Lid|2" << "Buckler|3"
-            << "Plexiglass|4" << "Fender|4" << "Round Shield|5" << "Carapace|5"
-            << "Scutum|6" << "Propugner|6" << "Kite Shield|7" << "Pavise|8"
-            << "Tower Shield|9" << "Baroque Shield|11" << "Aegis|12"
-            << "Magnetic Field|18";
+            << "Plexiglass|4" << "Fender|5" << "Round Shield|7" << "Carapace|10"
+            << "Scutum|15" << "Propugner|20" << "Kite Shield|30" << "Pavise|45"
+            << "Tower Shield|60" << "Baroque Shield|85" << "Aegis|110"
+            << "Magnetic Field|180";
 
     Armors << "Lace|1" << "Macrame|2" << "Burlap|3" << "Canvas|4" << "Flannel|5"
            << "Chamois|6" << "Pleathers|7" << "Leathers|8" << "Bearskin|9"
-           << "Ringmail|10" << "Scale Mail|12" << "Chainmail|14" << "Splint Mail|15"
-           << "Platemail|16" << "ABS|17" << "Kevlar|18" << "Titanium|19"
-           << "Mithril Mail|20" << "Diamond Mail|25" << "Plasma|30";
+           << "Ringmail|10" << "Scale Mail|12" << "Chainmail|18" << "Splint Mail|30"
+           << "Platemail|55" << "ABS|75" << "Kevlar|95" << "Titanium|125"
+           << "Mithril Mail|145" << "Diamond Mail|170" << "Plasma|200";
 
-    Weapons << "Stick|0" << "Broken Bottle|1" << "Shiv|1" << "Sprig|1" << "Oxgoad|1"
-            << "Eelspear|2" << "Bowie Knife|2" << "Claw Hammer|2" << "Handpeen|2"
-            << "Andiron|3" << "Hatchet|3" << "Tomahawk|3" << "Hackbarm|3" << "Crowbar|4"
-            << "Mace|4" << "Battleadze|4" << "Leafmace|5" << "Shortsword|5"
-            << "Longiron|5" << "Poachard|5" << "Baselard|5" << "Whinyard|6"
-            << "Blunderbuss|6" << "Longsword|6" << "Crankbow|6" << "Blibo|7"
-            << "Broadsword|7" << "Kreen|7" << "Warhammer|7" << "Morning Star|8"
-            << "Pole-adze|8" << "Spontoon|8" << "Bastard Sword|9" << "Peen-arm|9"
-            << "Culverin|10" << "Lance|10" << "Halberd|11" << "Poleax|12"
-            << "Bandyclef|15";
+    Weapons << "Stick|0" << "Broken Bottle|1" << "Shiv|2" << "Sprig|3" << "Oxgoad|4"
+            << "Eelspear|5" << "Bowie Knife|7" << "Claw Hammer|10" << "Handpeen|12"
+            << "Andiron|17" << "Hatchet|23" << "Tomahawk|32" << "Hackbarm|40" << "Crowbar|45"
+            << "Mace|50" << "Battleadze|55" << "Leafmace|60" << "Shortsword|65"
+            << "Longiron|70" << "Poachard|75" << "Baselard|80" << "Whinyard|85"
+            << "Blunderbuss|90" << "Longsword|95" << "Crankbow|100" << "Blibo|110"
+            << "Broadsword|120" << "Kreen|130" << "Warhammer|140" << "Morning Star|150"
+            << "Pole-adze|160" << "Spontoon|170" << "Bastard Sword|180" << "Peen-arm|190"
+            << "Culverin|200" << "Lance|220" << "Halberd|240" << "Poleax|260"
+            << "Bandyclef|280";
 
     Specials << "Diadem" << "Festoon" << "Gemstone" << "Phial" << "Tiara" << "Scabbard"
              << "Arrow" << "Lens" << "Lamp" << "Hymnal" << "Fleece" << "Laurel"

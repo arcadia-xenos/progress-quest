@@ -354,13 +354,12 @@ bool c_Monster::makeGroup(int level)
     // the %200 limits level deprec at high levels
     lvLeader = gConfig->fnRandTop((level % 200), 50);
 
-    if (lvLeader < 2)
+    if (lvLeader < 4)
         lvMinion = 1;
     else
-        //lvMinion = gConfig->fnRandTop(lvLeader, 50);
-        lvMinion = rand() % (lvLeader - 1) + 1;
+        lvMinion = rand() % 3 + 1; // [1..3]
 
-    numOfMinions = (level - lvLeader)/lvMinion;
+    numOfMinions = (level - lvLeader) / lvMinion;
 
 
     // form group - by levels
@@ -384,7 +383,7 @@ bool c_Monster::makeGroup(int level)
         monster_race = tr("Monster Group");
         monster_level = leader.Level().toInt() + minion.Level().toInt() * numOfMinions;
         drops.append(leader.Drops());
-        for (int i(0); i < gConfig->fnPercent(numOfMinions, 25); i++)
+        for (int i(0); i < gConfig->fnPercent(numOfMinions, 80); i++)
                 drops.append(minion.Drops());
         dropsFormatted=true;
         isGroup = true;

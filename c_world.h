@@ -10,9 +10,19 @@
 #include <fstream>
 
 #include <QObject>
+#include <QList>
 #include <QMessageBox>
 
 #include <jsoncpp/json/json.h>
+
+typedef enum {
+    pq_debug_none                       = 0,
+    pq_debug_zero_action_timer          = 1 << 0,
+    pq_debug_always_trigger_action      = 1 << 1,
+    pq_debug_action_triggers_save       = 1 << 2,
+    pq_debug_reserved_1                 = 1 << 3,
+    pq_debug_active                     = 1 << 15
+} t_pq_debug;
 
 typedef enum {
     pq_state_reserved_1,
@@ -76,6 +86,13 @@ public:
     c_Item* makeEqByGrade(t_pq_equip eqtype , int grade);
     void initPlayer();
 
+    bool isDebugFlagSet(t_pq_debug flag);
+    bool isDebugFlagReset(t_pq_debug flag);
+    void setDebugFlag(t_pq_debug flag);
+    void resetDebugFlag(t_pq_debug flag);
+    void toggleDebugFlag(t_pq_debug flag);
+    void debugClear();
+    void debugActive();
 
 private:
 
@@ -83,7 +100,15 @@ private:
     Json::Value listToArray(QStringList &list);
     QStringList arrayToList(Json::Value array);
 
+    /*
+     *      Debug flags
+     */
+    quint32 debug;
+
 signals:
+    //void debugChanged(quint32 dbgValue);
+    //void gameSaved();
+    //void gameLoaded();
 
 public slots:
     void save();

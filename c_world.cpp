@@ -3,6 +3,7 @@
 c_World::c_World(QObject *parent) :
     QObject(parent)
 {
+    debug = pq_debug_none;
     Player = new Entity;
     Monster = new c_Monster;
     Act = 0;
@@ -186,6 +187,11 @@ void c_World::save(QString filename)
         root[mKey]["pb_quest"] = pb_quest;
 
         /*
+        quint32 debug
+         */
+        root[mKey]["Debug"] = debug;
+
+        /*
         QStringList quests;
         */
         root[mKey]["Quests"] = c_World::listToArray(quests);
@@ -277,6 +283,11 @@ void c_World::load(Json::Value root)
     State   = (t_pq_state)root.get("State", 0).asInt();
 
     /*
+    quint32 debug
+     */
+    debug = (quint32) root.get("Debug", 0).asInt();
+
+    /*
         QStringList quests;
     */
     // if not found, passes empty json array to helper which will return empty qstringlist
@@ -324,4 +335,43 @@ QStringList c_World::arrayToList(Json::Value array)
         list.append( QString::fromStdString(array[i].asString()) );
     }
     return list;
+}
+
+
+bool c_World::isDebugFlagSet(t_pq_debug flag)
+{
+    return (debug & flag);
+}
+
+bool c_World::isDebugFlagReset(t_pq_debug flag)
+{
+    return ! (debug & flag);
+}
+
+void c_World::setDebugFlag(t_pq_debug flag)
+{
+    debug |= flag;
+}
+
+void c_World::resetDebugFlag(t_pq_debug flag)
+{
+    debug &= ~flag;
+}
+
+void c_World::toggleDebugFlag(t_pq_debug flag)
+{
+    if (c_World::isDebugFlagReset(flag))
+        c_World::setDebugFlag(flag);
+    else
+        c_World::resetDebugFlag(flag);
+}
+
+void c_World::debugClear()
+{
+    debug = pq_debug_none;
+}
+
+void c_World::debugActive()
+{
+    debug = pq_debug_active;
 }
