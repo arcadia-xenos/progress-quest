@@ -1,0 +1,6 @@
+#
+# Ignore the qt .pro.user files which are
+# constantly changing project metadata
+#
+###########################################
+*.pro.user
