@@ -426,14 +426,14 @@ void c_Item::arrayToModList(Json::Value array, QStringList &mList, QList<bool> &
     gList.clear();
 
     // cycle through items
-    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    for (Json::Value::ArrayIndex i=0; i < array.size(); i++)
     {
         //set.clear(); //needed?
         set = array.get(i,Json::arrayValue);
 
         // read in ordered set of values
-        mList.append(QString::fromStdString(set.get((Json::ArrayIndex)0, "").asString()));
-        pList.append(set.get((Json::ArrayIndex)1, false).asBool());
-        gList.append(set.get((Json::ArrayIndex)2, 0).asInt());
+        mList.append(QString::fromStdString(set.get((Json::Value::ArrayIndex)0, "").asString()));
+        pList.append(set.get((Json::Value::ArrayIndex)1, false).asBool());
+        gList.append(set.get((Json::Value::ArrayIndex)2, 0).asInt());
     }
 }

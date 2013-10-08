@@ -493,20 +493,20 @@ Json::Value c_Monster::dropListToArray(QStringList &list)
 void c_Monster::arrayToModList(Json::Value array, QStringList &mList, QList<int> &vList)
 {
     Json::Value pair;
-    Json::ArrayIndex i;
+    Json::Value::ArrayIndex i;
     for (i=0; i < array.size(); i++)
     {
         pair.clear();
 
         pair = array.get(i,Json::arrayValue);
-        mList.append(QString::fromStdString(pair.get((Json::ArrayIndex)0,"").asString()));
-        vList.append(pair.get((Json::ArrayIndex)1,0).asInt());
+        mList.append(QString::fromStdString(pair.get((Json::Value::ArrayIndex)0,"").asString()));
+        vList.append(pair.get((Json::Value::ArrayIndex)1,0).asInt());
     }
 }
 
 QStringList c_Monster::arrayToDropList(Json::Value array)
 {
-    Json::ArrayIndex i;
+    Json::Value::ArrayIndex i;
     QStringList list;
     list.clear();
 

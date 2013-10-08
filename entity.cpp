@@ -304,7 +304,7 @@ Json::Value Entity::invListToArray(QList<c_Item *> &iList, QList<int> &nList)
 QList<c_Spell *> Entity::arrayToSpellList(Json::Value array)
 {
     QList<c_Spell *> list;
-    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    for (Json::Value::ArrayIndex i=0; i < array.size(); i++)
     {
         list.append(new c_Spell);
         list.at(list.size() - 1)->load(array.get(i, Json::objectValue));
@@ -315,7 +315,7 @@ QList<c_Spell *> Entity::arrayToSpellList(Json::Value array)
 QList<c_Item *> Entity::arrayToItemList(Json::Value array)
 {
     QList<c_Item *> list;
-    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    for (Json::Value::ArrayIndex i=0; i < array.size(); i++)
     {
         list.append(new c_Item);
         list.at(list.size() - 1)->load(array.get(i, Json::objectValue));
@@ -331,13 +331,13 @@ void Entity::arrayToInvList(Json::Value array, QList<c_Item *> &iList, QList<int
     iList.clear();
     nList.clear();
 
-    for (Json::ArrayIndex i=0; i < array.size(); i++)
+    for (Json::Value::ArrayIndex i=0; i < array.size(); i++)
     {
         pair = array.get(i, Json::arrayValue);
 
         iList.append(new c_Item);
-        iList.at(iList.size() - 1)->load(pair.get((Json::ArrayIndex)0,Json::objectValue));
+        iList.at(iList.size() - 1)->load(pair.get((Json::Value::ArrayIndex)0,Json::objectValue));
 
-        nList.append(pair.get((Json::ArrayIndex)1, 0).asInt());
+        nList.append(pair.get((Json::Value::ArrayIndex)1, 0).asInt());
     }
 }

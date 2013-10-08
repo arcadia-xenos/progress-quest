@@ -4,7 +4,11 @@
 #
 #-------------------------------------------------
 
-LIBS += -ljsoncpp
+#LIBS += -ljsoncpp
+#LIBS += "C:/Users/Eddie/Downloads/jsoncpp/libs/mingw/libjson_mingw_libmt.a"
+LIBS += "C:/Users/Eddie/Downloads/jsoncpp/libs/mingw/libjson_mingw_libmt.a"
+INCLUDEPATH += "C:/Users/Eddie/Downloads/"
+
 
 QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
