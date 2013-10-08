@@ -49,6 +49,9 @@ void Dialog_Opening::createNewChar()
 void Dialog_Opening::loadChar()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open PQ7 Save File"), ".", tr("Save Files (*.pqd)"));
+
+    if (filename.isEmpty()) return; // cancellation guard
+
     game->load(filename);
     this->close();
 }
