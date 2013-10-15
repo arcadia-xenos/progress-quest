@@ -52,5 +52,6 @@ FORMS    += mainwindow.ui \
     dialog_charsheet.ui
 
 OTHER_FILES += \
-    README
+    README \
+    INSTALL
 
