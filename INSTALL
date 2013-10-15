@@ -15,13 +15,9 @@ Jsoncpp uses the following to build itself. Please, don't send me hatemail
 on the subject of python, I invented python hating. But jsoncpp is the stuff
 and it only uses it to get it's game on. ne'ner-ne'ner.
 
-    - python (not included in repo)
-    - scons-local (already in the jsoncpp sub-directory)
-
-we are currently using a copy of jsoncpp version 0.5.0 and a scon-local
-version of 2.3.0. If you have issue with them report to xeno and we will
-do the thing... with the stuff.
-
+    - python
+    - scons-local (we used 2.3.0)
+    - jsoncpp (we used 0.5.0)
 
 MS Windows Configuration:
 
@@ -63,12 +59,28 @@ INSTRUCTIONS:
 
  - Git the release version from github link using your favorite git method
 (zip file should work as well)
- - Change directory to the jsoncpp sub-directory within the project.
- - Follow the version specific instructions to compile jsoncpp
-    * usually just: python scons.py platform=[PLATFORM]
-    * where PLATFORM is either "linux-gcc" or "mingw"
+ - Follow the below instructions for DOWNLOADING AND CONFIGURING DEPENDENCIES
  - Open the project in QT Creator. The pq7.pro file is the file for that.
  - Either Build or Run the project and be amazed
+
+DOWNLOADING AND CONFIGURING DEPENDENCIES:
+
+jsoncpp is found here:
+http://sourceforge.net/projects/jsoncpp/
+
+SCONS-local:
+http://www.scons.org/download.php
+(go down to the "scons-local" section, not the full scons packages)
+
+CD to the progress-quest project directory
+untar/zip the jsoncpp file into the progress-quest project directory.
+Cd into the jsoncpp source directory and unzip the scons-local package.
+run the install line, usually: python scons.py platform=<PLATFORM>
+    Where: <PLATFORM> = 'linux-gcc' or 'mingw'
+
+The package should compile fine, but if it doesn't don't blame me.
+I fought the good fight to make all this easier and it just burned me
+every chance it got.
 
 WHY NOT AN AUTOBUILD? CMAKE? WTF?
 I'm lost on it. Provide suggestions and they WILL be considered.
