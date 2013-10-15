@@ -7,10 +7,10 @@
 
 # added by xeno
 MYJSONLIB = "$${_PRO_FILE_PWD_}/jsoncpp-src-0.5.0"
-win {
+win32 {
 LIBS += "$${MYJSONLIB}/libs/mingw/*.a"
 }
-linux-gcc {
+unix {
 LIBS += "$${MYJSONLIB}/libs/linux-gcc*/*.a"
 }
 INCLUDEPATH += "$${MYJSONLIB}/include"
