@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <jsoncpp/json/json.h>
+#include "json/json.h"
 
 class c_Monster : public QObject
 {

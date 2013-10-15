@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QString>
 
-#include <jsoncpp/json/json.h>
+#include "json/json.h"
 
 class Entity : public QObject
 {

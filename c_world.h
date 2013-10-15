@@ -13,7 +13,7 @@
 #include <QList>
 #include <QMessageBox>
 
-#include <jsoncpp/json/json.h>
+#include "json/json.h"
 
 typedef enum {
     pq_debug_none                       = 0,

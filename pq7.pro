@@ -4,17 +4,27 @@
 #
 #-------------------------------------------------
 
-#LIBS += -ljsoncpp
-#LIBS += "C:/Users/Eddie/Downloads/jsoncpp/libs/mingw/libjson_mingw_libmt.a"
-LIBS += "C:/Users/Eddie/Downloads/jsoncpp/libs/mingw/libjson_mingw_libmt.a"
-INCLUDEPATH += "C:/Users/Eddie/Downloads/"
 
+# added by xeno
+MYJSONLIB = "$${_PRO_FILE_PWD_}/jsoncpp-src-0.5.0"
+win {
+LIBS += "$${MYJSONLIB}/libs/mingw/*.a"
+}
+linux-gcc {
+LIBS += "$${MYJSONLIB}/libs/linux-gcc*/*.a"
+}
+INCLUDEPATH += "$${MYJSONLIB}/include"
 
 QT       += core gui
+
+# added by xeno: QT 5.x.x compile support
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = pq7
 TEMPLATE = app
+
+# added by xeno
+VERSION = 7.0.0
 
 SOURCES += main.cpp\
         mainwindow.cpp \
