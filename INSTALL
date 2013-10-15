@@ -1,0 +1,114 @@
+INSTALL for Release Version of Progress Quest
+
+Progress Quest version 7.0.0
+Martin Horner (Arcadia-Xenos on github) (xeno@morgoth.net)
+Github: https://github.com/arcadia-xenos/progress-quest.git
+
+Progress Quest v7 is designed to be compiled on at least a fairly accessible
+MS Windows setup, but was developed on a linux system. Please
+forgive the lack of knowledge displayed by the following instructions;
+I try, but I find that is the shortest path to failure ^_^
+
+
+DEPENDENCIES:
+Jsoncpp uses the following to build itself. Please, don't send me hatemail
+on the subject of python, I invented python hating. But jsoncpp is the stuff
+and it only uses it to get it's game on. ne'ner-ne'ner.
+
+    - python (not included in repo)
+    - scons-local (already in the jsoncpp sub-directory)
+
+we are currently using a copy of jsoncpp version 0.5.0 and a scon-local
+version of 2.3.0. If you have issue with them report to xeno and we will
+do the thing... with the stuff.
+
+
+MS Windows Configuration:
+
+This is the setup that enzyme used to successfully compile on Windows 7.
+We both hope there are other configurations for Win that will work unmodified,
+but we aren't going to get into the wildlands of testing everything under the
+sun.:
+
+    - Qt Creator 2.8.1
+    - Qt 5.1.1(MSVC 2010, 32bit)
+    - Windows 7 Home Premium 64 bit
+    - MinGW gcc (rev2, Built by MinGW-builds project) 4.8.0
+
+
+Linux Configuration:
+
+This was the linux setup for development / compilation. Obviously it's
+not the only setup you could use.
+
+    - Ubuntu 12.04
+    - QT 4.8.1 (32 bit)
+    - QT Creator 2.5.2
+
+
+QT 4 / 5:
+We have made allowance for some QT 4/5 cross compilation and it seems to
+work fine.
+
+Linux distribution specifics:
+The linux distribution specific stuff is minimized - should
+work on almost any distro configured to compile using g++.
+
+Windows compiler specifics:
+I don't have a clue about Windows anymore and really don't care much.
+Enzyme was nice enough to do the heavy lifting there and knows more.
+I will ask if he can fill this section in.
+
+INSTRUCTIONS:
+
+ - Git the release version from github link using your favorite git method
+(zip file should work as well)
+ - Change directory to the jsoncpp sub-directory within the project.
+ - Follow the version specific instructions to compile jsoncpp
+    * usually just: python scons.py platform=[PLATFORM]
+    * where PLATFORM is either "linux-gcc" or "mingw"
+ - Open the project in QT Creator. The pq7.pro file is the file for that.
+ - Either Build or Run the project and be amazed
+
+WHY NOT AN AUTOBUILD? CMAKE? WTF?
+I'm lost on it. Provide suggestions and they WILL be considered.
+
+WHEN IT ALL GOES WRONG:
+
+We had some interesting things come up in trying to produce a cross-platform
+version. Here are some hints on things to pay attention to:
+
+ - In the pq7.pro file:
+    * The LIBS variable needs to reference the jsoncpp library file (static or
+      shared) If it's not there - you may have skipped the SCONS step above.
+    * The INCLUDEPATH needs to ref the jsoncpp headers (also built by SCONS step)
+    * Both use the MYJSONLIB which should point to the jsoncpp source directory
+      (it's relative to the project directory and shouldn't need help unless you
+      are using a system lib or jsoncpp installed elsewhere)
+    * there is a windows specific area and a linux specific area already defined
+      (other os specific id's I know of are: 'mac' and 'unix')
+
+Things to watch for:
+
+The jsoncpp headers sub directory has a file called "features.h" which will play hell
+on a linux machine if an include path is created directly to it:
+
+INCLUDEPATH += "$${MYJSONLIB}/include/json"
+
+where files needing the headers would use:
+
+#include "json.h"
+
+Apparently, the c stdlibs (for gcc ?) also contain a "features.h" and by specifying an
+include path to the json version it can preempt it. You can prevent this using a
+sub-directory pathing:
+
+INCLUDEPATH += "$${MYJSONLIB}/include"
+
+where files needing the headers would use:
+
+#include "json/json.h"
+
+Just be aware of this and most header pathing problems should be limited.
+
+(Don't you love it when some fool uses "should"?)

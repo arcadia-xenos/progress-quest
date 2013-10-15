@@ -2,42 +2,45 @@
   Martin Horner (xeno@morgoth.net) - Sep 2012
 
   This software owes a great debt to Eric Fredricksen and his original
-  Progress Quest written in Delphi pascal also the subsequient javascript
+  Progress Quest written in Delphi pascal also the subsequent javascript
   version.
 
   Progress Quest started (if I understand correctly) as a joke. A sort of
   internet meme that went out of control. If I interpret the joke correctly
-  (and I certianly might not), Eric was pointing out that most MMORPG's
-  (RPG's?) are just time consumption. There were certinly other aspects to
+  (and I certainly might not), Eric was pointing out that most MMORPG's
+  (RPG's?) are just time consumption. There were certainly other aspects to
   the joke, but I think that was the main point.
 
 
 DOWNLOADING:
 
-Found at github:
+    Found at github:
 
-https://github.com/arcadia-xenos/progress-quest.git
+    https://github.com/arcadia-xenos/progress-quest.git
 
 
 COMPILE HINTS:
 
-Requires Qt4 libraries (4.8.1ish), jsoncpp libraries,  C++ with standard libs
-    QT Creator (QT's IDE and form creation environment) is a plus.
+    We leave the compile business to QT Creator. It makes us happy.
 
-jsoncpp can be found at http://sourceforge.net/projects/jsoncpp/files/
-    or svn'd from http://jsoncpp.svn.sourceforge.net/svnroot/jsoncpp/trunk/
-
-The github fetch will provide a complete project for Qt Creator.
-
-If you've never used Qt Creator, consider this an opportunity to make a new
-best friend.
+    We aren't above suggestions for changing how to change this to use
+    CMake or some other nice builder. Please email xeno, but be warned,
+    he may have something else to do and guarantees nothing.
 
 
-Notes:
+NOTES:
 
     Yes, I am considering a package set once pq7 is released (at time of writing
-    we are in beta10)
+    we are in beta10). I consider a lot of things. Most of which are dismissed at
+    some point after they have sufficiently annoyed me.
 
     No, once pq7 is completed, I'm moving immediately to pq8 which is a much more
-    extensive vision of pq than a remake of 6. I will not be refineing pq7 after
-    release. That will be left to community.
+    extensive vision of pq than a remake of 6. I will not be refining pq7 after
+    release. That will be left (mostly) to the community.
+
+    That being said, improvement suggestions and bug reports are always welcome.
+
+    Actually, they will be snickered at immediately and subsequently forced to
+    preform demeaning tricks. At some point a respect for the email may develop
+    and actions taken on it's behalf, but don't hold your breath. We are a cruel
+    bunch around here.
